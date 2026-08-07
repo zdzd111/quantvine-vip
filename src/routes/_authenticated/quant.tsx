@@ -109,10 +109,11 @@ function QuantPage() {
       <section className="panel flex flex-col items-center gap-4 p-6">
         <div className="relative grid h-40 w-40 place-items-center">
           <div
-            className={`absolute inset-0 rounded-full border-4 ${
+            className={`pointer-events-none absolute inset-0 rounded-full border-4 ${
               running ? "border-gold/40 pulse-ring" : "border-border"
             }`}
           />
+
           <button
             type="button"
             onClick={handleRun}
