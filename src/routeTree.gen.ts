@@ -10,33 +10,177 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAboutRouteImport } from './routes/_authenticated/about'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAgencyRouteImport } from './routes/_authenticated/agency'
+import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
+import { Route as AuthenticatedFaqRouteImport } from './routes/_authenticated/faq'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedQuantRouteImport } from './routes/_authenticated/quant'
+import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
+import { Route as AuthenticatedWalletRouteImport } from './routes/_authenticated/wallet'
+import { Route as AuthenticatedWithdrawRouteImport } from './routes/_authenticated/withdraw'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAboutRoute = AuthenticatedAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAgencyRoute = AuthenticatedAgencyRouteImport.update({
+  id: '/agency',
+  path: '/agency',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
+  id: '/deposit',
+  path: '/deposit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFaqRoute = AuthenticatedFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedQuantRoute = AuthenticatedQuantRouteImport.update({
+  id: '/quant',
+  path: '/quant',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
+  id: '/withdraw',
+  path: '/withdraw',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AuthenticatedAboutRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/agency': typeof AuthenticatedAgencyRoute
+  '/deposit': typeof AuthenticatedDepositRoute
+  '/faq': typeof AuthenticatedFaqRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/quant': typeof AuthenticatedQuantRoute
+  '/team': typeof AuthenticatedTeamRoute
+  '/wallet': typeof AuthenticatedWalletRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AuthenticatedAboutRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/agency': typeof AuthenticatedAgencyRoute
+  '/deposit': typeof AuthenticatedDepositRoute
+  '/faq': typeof AuthenticatedFaqRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/quant': typeof AuthenticatedQuantRoute
+  '/team': typeof AuthenticatedTeamRoute
+  '/wallet': typeof AuthenticatedWalletRoute
+  '/withdraw': typeof AuthenticatedWithdrawRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/about': typeof AuthenticatedAboutRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/agency': typeof AuthenticatedAgencyRoute
+  '/_authenticated/deposit': typeof AuthenticatedDepositRoute
+  '/_authenticated/faq': typeof AuthenticatedFaqRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/quant': typeof AuthenticatedQuantRoute
+  '/_authenticated/team': typeof AuthenticatedTeamRoute
+  '/_authenticated/wallet': typeof AuthenticatedWalletRoute
+  '/_authenticated/withdraw': typeof AuthenticatedWithdrawRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/agency'
+    | '/deposit'
+    | '/faq'
+    | '/home'
+    | '/profile'
+    | '/quant'
+    | '/team'
+    | '/wallet'
+    | '/withdraw'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/admin'
+    | '/agency'
+    | '/deposit'
+    | '/faq'
+    | '/home'
+    | '/profile'
+    | '/quant'
+    | '/team'
+    | '/wallet'
+    | '/withdraw'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/_authenticated/about'
+    | '/_authenticated/admin'
+    | '/_authenticated/agency'
+    | '/_authenticated/deposit'
+    | '/_authenticated/faq'
+    | '/_authenticated/home'
+    | '/_authenticated/profile'
+    | '/_authenticated/quant'
+    | '/_authenticated/team'
+    | '/_authenticated/wallet'
+    | '/_authenticated/withdraw'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +192,128 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/about': {
+      id: '/_authenticated/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AuthenticatedAboutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/agency': {
+      id: '/_authenticated/agency'
+      path: '/agency'
+      fullPath: '/agency'
+      preLoaderRoute: typeof AuthenticatedAgencyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/deposit': {
+      id: '/_authenticated/deposit'
+      path: '/deposit'
+      fullPath: '/deposit'
+      preLoaderRoute: typeof AuthenticatedDepositRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/faq': {
+      id: '/_authenticated/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof AuthenticatedFaqRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/quant': {
+      id: '/_authenticated/quant'
+      path: '/quant'
+      fullPath: '/quant'
+      preLoaderRoute: typeof AuthenticatedQuantRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/team': {
+      id: '/_authenticated/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof AuthenticatedTeamRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wallet': {
+      id: '/_authenticated/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof AuthenticatedWalletRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/withdraw': {
+      id: '/_authenticated/withdraw'
+      path: '/withdraw'
+      fullPath: '/withdraw'
+      preLoaderRoute: typeof AuthenticatedWithdrawRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAboutRoute: typeof AuthenticatedAboutRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAgencyRoute: typeof AuthenticatedAgencyRoute
+  AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
+  AuthenticatedFaqRoute: typeof AuthenticatedFaqRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedQuantRoute: typeof AuthenticatedQuantRoute
+  AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
+  AuthenticatedWalletRoute: typeof AuthenticatedWalletRoute
+  AuthenticatedWithdrawRoute: typeof AuthenticatedWithdrawRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAboutRoute: AuthenticatedAboutRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAgencyRoute: AuthenticatedAgencyRoute,
+  AuthenticatedDepositRoute: AuthenticatedDepositRoute,
+  AuthenticatedFaqRoute: AuthenticatedFaqRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedQuantRoute: AuthenticatedQuantRoute,
+  AuthenticatedTeamRoute: AuthenticatedTeamRoute,
+  AuthenticatedWalletRoute: AuthenticatedWalletRoute,
+  AuthenticatedWithdrawRoute: AuthenticatedWithdrawRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
