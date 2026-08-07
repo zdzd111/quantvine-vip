@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAboutRouteImport } from './routes/_authenticated/about'
 import { Route as AuthenticatedAgencyRouteImport } from './routes/_authenticated/agency'
 import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedFaqRouteImport } from './routes/_authenticated/faq'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAboutRoute = AuthenticatedAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAgencyRoute = AuthenticatedAgencyRouteImport.update({
   id: '/agency',
@@ -78,6 +84,7 @@ const AuthenticatedWithdrawRoute = AuthenticatedWithdrawRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AuthenticatedAboutRoute
   '/agency': typeof AuthenticatedAgencyRoute
   '/deposit': typeof AuthenticatedDepositRoute
   '/faq': typeof AuthenticatedFaqRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AuthenticatedAboutRoute
   '/agency': typeof AuthenticatedAgencyRoute
   '/deposit': typeof AuthenticatedDepositRoute
   '/faq': typeof AuthenticatedFaqRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/about': typeof AuthenticatedAboutRoute
   '/_authenticated/agency': typeof AuthenticatedAgencyRoute
   '/_authenticated/deposit': typeof AuthenticatedDepositRoute
   '/_authenticated/faq': typeof AuthenticatedFaqRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/agency'
     | '/deposit'
     | '/faq'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/agency'
     | '/deposit'
     | '/faq'
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/about'
     | '/_authenticated/agency'
     | '/_authenticated/deposit'
     | '/_authenticated/faq'
@@ -174,6 +186,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/about': {
+      id: '/_authenticated/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AuthenticatedAboutRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/agency': {
       id: '/_authenticated/agency'
@@ -242,6 +261,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAboutRoute: typeof AuthenticatedAboutRoute
   AuthenticatedAgencyRoute: typeof AuthenticatedAgencyRoute
   AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
   AuthenticatedFaqRoute: typeof AuthenticatedFaqRoute
@@ -254,6 +274,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAboutRoute: AuthenticatedAboutRoute,
   AuthenticatedAgencyRoute: AuthenticatedAgencyRoute,
   AuthenticatedDepositRoute: AuthenticatedDepositRoute,
   AuthenticatedFaqRoute: AuthenticatedFaqRoute,
