@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAgencyRouteImport } from './routes/_authenticated/agency'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedQuantRouteImport } from './routes/_authenticated/quant'
 import { Route as AuthenticatedTeamRouteImport } from './routes/_authenticated/team'
@@ -23,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAgencyRoute = AuthenticatedAgencyRouteImport.update({
+  id: '/agency',
+  path: '/agency',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
@@ -42,12 +48,14 @@ const AuthenticatedTeamRoute = AuthenticatedTeamRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agency': typeof AuthenticatedAgencyRoute
   '/home': typeof AuthenticatedHomeRoute
   '/quant': typeof AuthenticatedQuantRoute
   '/team': typeof AuthenticatedTeamRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agency': typeof AuthenticatedAgencyRoute
   '/home': typeof AuthenticatedHomeRoute
   '/quant': typeof AuthenticatedQuantRoute
   '/team': typeof AuthenticatedTeamRoute
@@ -56,19 +64,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/agency': typeof AuthenticatedAgencyRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/quant': typeof AuthenticatedQuantRoute
   '/_authenticated/team': typeof AuthenticatedTeamRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/quant' | '/team'
+  fullPaths: '/' | '/agency' | '/home' | '/quant' | '/team'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/quant' | '/team'
+  to: '/' | '/agency' | '/home' | '/quant' | '/team'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/_authenticated/agency'
     | '/_authenticated/home'
     | '/_authenticated/quant'
     | '/_authenticated/team'
@@ -95,6 +105,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/agency': {
+      id: '/_authenticated/agency'
+      path: '/agency'
+      fullPath: '/agency'
+      preLoaderRoute: typeof AuthenticatedAgencyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -120,12 +137,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAgencyRoute: typeof AuthenticatedAgencyRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedQuantRoute: typeof AuthenticatedQuantRoute
   AuthenticatedTeamRoute: typeof AuthenticatedTeamRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAgencyRoute: AuthenticatedAgencyRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedQuantRoute: AuthenticatedQuantRoute,
   AuthenticatedTeamRoute: AuthenticatedTeamRoute,
