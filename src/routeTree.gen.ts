@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAgencyRouteImport } from './routes/_authenticated/agency'
+import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedQuantRouteImport } from './routes/_authenticated/quant'
@@ -30,6 +31,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthenticatedAgencyRoute = AuthenticatedAgencyRouteImport.update({
   id: '/agency',
   path: '/agency',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
+  id: '/deposit',
+  path: '/deposit',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
@@ -61,6 +67,7 @@ const AuthenticatedWalletRoute = AuthenticatedWalletRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agency': typeof AuthenticatedAgencyRoute
+  '/deposit': typeof AuthenticatedDepositRoute
   '/home': typeof AuthenticatedHomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/quant': typeof AuthenticatedQuantRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agency': typeof AuthenticatedAgencyRoute
+  '/deposit': typeof AuthenticatedDepositRoute
   '/home': typeof AuthenticatedHomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/quant': typeof AuthenticatedQuantRoute
@@ -81,6 +89,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/agency': typeof AuthenticatedAgencyRoute
+  '/_authenticated/deposit': typeof AuthenticatedDepositRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/quant': typeof AuthenticatedQuantRoute
@@ -90,14 +99,30 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/agency' | '/home' | '/profile' | '/quant' | '/team' | '/wallet'
+    | '/'
+    | '/agency'
+    | '/deposit'
+    | '/home'
+    | '/profile'
+    | '/quant'
+    | '/team'
+    | '/wallet'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agency' | '/home' | '/profile' | '/quant' | '/team' | '/wallet'
+  to:
+    | '/'
+    | '/agency'
+    | '/deposit'
+    | '/home'
+    | '/profile'
+    | '/quant'
+    | '/team'
+    | '/wallet'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/agency'
+    | '/_authenticated/deposit'
     | '/_authenticated/home'
     | '/_authenticated/profile'
     | '/_authenticated/quant'
@@ -131,6 +156,13 @@ declare module '@tanstack/react-router' {
       path: '/agency'
       fullPath: '/agency'
       preLoaderRoute: typeof AuthenticatedAgencyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/deposit': {
+      id: '/_authenticated/deposit'
+      path: '/deposit'
+      fullPath: '/deposit'
+      preLoaderRoute: typeof AuthenticatedDepositRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/home': {
@@ -173,6 +205,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgencyRoute: typeof AuthenticatedAgencyRoute
+  AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedQuantRoute: typeof AuthenticatedQuantRoute
@@ -182,6 +215,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgencyRoute: AuthenticatedAgencyRoute,
+  AuthenticatedDepositRoute: AuthenticatedDepositRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedQuantRoute: AuthenticatedQuantRoute,
