@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAgencyRouteImport } from './routes/_authenticated/agency'
 import { Route as AuthenticatedDepositRouteImport } from './routes/_authenticated/deposit'
+import { Route as AuthenticatedFaqRouteImport } from './routes/_authenticated/faq'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedQuantRouteImport } from './routes/_authenticated/quant'
@@ -37,6 +38,11 @@ const AuthenticatedAgencyRoute = AuthenticatedAgencyRouteImport.update({
 const AuthenticatedDepositRoute = AuthenticatedDepositRouteImport.update({
   id: '/deposit',
   path: '/deposit',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedFaqRoute = AuthenticatedFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agency': typeof AuthenticatedAgencyRoute
   '/deposit': typeof AuthenticatedDepositRoute
+  '/faq': typeof AuthenticatedFaqRoute
   '/home': typeof AuthenticatedHomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/quant': typeof AuthenticatedQuantRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agency': typeof AuthenticatedAgencyRoute
   '/deposit': typeof AuthenticatedDepositRoute
+  '/faq': typeof AuthenticatedFaqRoute
   '/home': typeof AuthenticatedHomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/quant': typeof AuthenticatedQuantRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/agency': typeof AuthenticatedAgencyRoute
   '/_authenticated/deposit': typeof AuthenticatedDepositRoute
+  '/_authenticated/faq': typeof AuthenticatedFaqRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/quant': typeof AuthenticatedQuantRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agency'
     | '/deposit'
+    | '/faq'
     | '/home'
     | '/profile'
     | '/quant'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agency'
     | '/deposit'
+    | '/faq'
     | '/home'
     | '/profile'
     | '/quant'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authenticated/agency'
     | '/_authenticated/deposit'
+    | '/_authenticated/faq'
     | '/_authenticated/home'
     | '/_authenticated/profile'
     | '/_authenticated/quant'
@@ -175,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/deposit'
       fullPath: '/deposit'
       preLoaderRoute: typeof AuthenticatedDepositRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/faq': {
+      id: '/_authenticated/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof AuthenticatedFaqRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/home': {
@@ -225,6 +244,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgencyRoute: typeof AuthenticatedAgencyRoute
   AuthenticatedDepositRoute: typeof AuthenticatedDepositRoute
+  AuthenticatedFaqRoute: typeof AuthenticatedFaqRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedQuantRoute: typeof AuthenticatedQuantRoute
@@ -236,6 +256,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgencyRoute: AuthenticatedAgencyRoute,
   AuthenticatedDepositRoute: AuthenticatedDepositRoute,
+  AuthenticatedFaqRoute: AuthenticatedFaqRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedQuantRoute: AuthenticatedQuantRoute,
