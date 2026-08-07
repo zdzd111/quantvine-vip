@@ -72,7 +72,7 @@ function ProfilePage() {
             ["إجمالي الإيرادات", profile?.total_revenue ?? 0],
             ["أرباح الأمس", profile?.yesterday_earnings ?? 0],
             ["أرباح اليوم", profile?.today_earnings ?? 0],
-            ["عمولة الفريق", profile?.total_commission ?? 0],
+            ["عمولة الفريق", profile?.today_commission ?? 0],
           ].map(([label, value]) => (
             <div key={String(label)} className="rounded-xl bg-primary-foreground/10 p-2.5">
               <p className="text-[10px] font-semibold opacity-80">{label}</p>
