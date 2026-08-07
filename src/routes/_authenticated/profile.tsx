@@ -57,7 +57,7 @@ function ProfilePage() {
         </span>
         <div className="min-w-0">
           <p className="truncate text-base font-extrabold">{profile?.username ?? "..."}</p>
-          <p className="num text-[11px] text-muted-foreground">ID: {profile?.invite_code ?? "..."}</p>
+          <p className="num text-[11px] text-muted-foreground">ID: {profile?.public_id ?? "..."}</p>
         </div>
         <span className="shrink-0 rounded-lg bg-accent px-2.5 py-1 text-xs font-black text-accent-foreground">
           VIP{profile?.vip_level ?? 1}
