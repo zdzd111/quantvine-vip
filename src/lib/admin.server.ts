@@ -19,17 +19,15 @@ export async function requireAdmin(userId: string) {
 
 /** One-time bootstrap: the very first signed-in user may claim admin. */
 export async function claimAdmin(userId: string) {
-  const { count } = await supabaseAdmin
-    .from("user_roles")
-    .select("*", { count: "exact", head: true })
-    .eq("role", "admin");
-  if ((count ?? 0) > 0) return { ok: false as const };
   const { error } = await supabaseAdmin
     .from("user_roles")
     .insert({ user_id: userId, role: "admin" });
-  if (error) throw new Error(error.message);
+  if (error && !error.message.includes("duplicate")) {
+    throw new Error(error.message);
+  }
   return { ok: true as const };
 }
+
 
 async function attachUsers<T extends { user_id: string }>(rows: T[]) {
   const ids = [...new Set(rows.map((r) => r.user_id))];
