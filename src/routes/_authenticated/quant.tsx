@@ -230,8 +230,8 @@ function QuantPage() {
               ? t("quant.exhausted_toast")
               : lowBalance
                 ? t("quant.low_balance")
-                : `${VIP_TITLES[profile?.vip_level ?? 1]} — ${currentRule?.min_rate ?? "1.80"}% ~ ${currentRule?.max_rate ?? "2.10"}%`}
-        </p>
+                
+
         {running && (
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div className="gold-surface h-full transition-all" style={{ width: `${progress}%` }} />
