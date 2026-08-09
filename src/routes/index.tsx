@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -86,18 +85,6 @@ function AuthPage() {
     }
   }
 
-  async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error("تعذر تسجيل الدخول عبر Google");
-      return;
-    }
-    if (result.redirected) return;
-    navigate({ to: "/home", replace: true });
-  }
-
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-lg flex-col justify-center gap-6 px-5 py-10">
       <header className="text-center">
@@ -164,14 +151,6 @@ function AuthPage() {
           className="gold-surface w-full rounded-xl py-3 text-sm font-black disabled:opacity-50"
         >
           {busy ? "جارٍ المعالجة..." : mode === "login" ? "تسجيل الدخول" : "إنشاء حساب"}
-        </button>
-
-        <button
-          type="button"
-          onClick={google}
-          className="w-full rounded-xl border border-border bg-elevated py-3 text-sm font-bold"
-        >
-          المتابعة باستخدام Google
         </button>
       </div>
 
