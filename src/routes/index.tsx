@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { SecurityBadges } from "@/components/SecurityBadges";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
