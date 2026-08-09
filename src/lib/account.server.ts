@@ -51,19 +51,16 @@ export async function rollDay(profile: ProfileRow): Promise<ProfileRow> {
 export async function loadProfile(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("profiles")
-    .update({
-      quant_count: 0,
-      quant_date: new Date().toISOString().slice(0, 10),
-      today_earnings: 0
-    })
-    .eq("id", userId)
     .select("*")
+    .eq("id", userId)
     .single();
     
   if (error) throw new Error(error.message);
   
-  return data as ProfileRow;
+  // تشغيل دالة التصفير بأمان دون إجبار وتخريب البيانات
+  return await rollDay(data as ProfileRow);
 }
+
 
 
 export async function getSetting(key: string): Promise<string | null> {
