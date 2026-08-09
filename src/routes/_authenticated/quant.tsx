@@ -225,12 +225,14 @@ function QuantPage() {
         </div>
         <p className="text-center text-xs text-muted-foreground">
           {running
-            ? t("quant.running")
-            : exhausted
-              ? t("quant.exhausted_toast")
-              : lowBalance
-                ? t("quant.low_balance")
-                
+  ? t("quant.running")
+  : exhausted
+    ? t("quant.exhausted_toast")
+    : lowBalance
+      ? t("quant.low_balance")
+      : null
+}
+
 
         {running && (
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
