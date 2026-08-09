@@ -202,11 +202,13 @@ export async function runQuant(userId: string) {
     };
   }
 
-  const adjust = Number((await getSetting("profit_adjust")) ?? 0);
-  const min = Number(vip.min_rate);
+    const min = Number(vip.min_rate);
   const max = Number(vip.max_rate);
-  const rate = round2(min + Math.random() * (max - min) + adjust);
-  const profit = round2((Number(profile.balance) * rate) / 100);
+  const dailyRate = min + Math.random() * (max - min); 
+  const totalDailyProfit = Number(profile.balance) * dailyRate;
+  const totalTasks = Number(vip.daily_tasks) || 5;
+  const profit = round2(totalDailyProfit / totalTasks);
+
 
   const { data: updated, error } = await supabaseAdmin
     .from("profiles")
