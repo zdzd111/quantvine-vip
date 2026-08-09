@@ -202,12 +202,13 @@ export async function runQuant(userId: string) {
     };
   }
 
-    const min = Number(vip.min_rate);
-  const max = Number(vip.max_rate);
-  const dailyRate = min + Math.random() * (max - min); 
-  const totalDailyProfit = Number(profile.balance) * dailyRate;
-  const totalTasks = Number(vip.daily_tasks) || 5;
-  const profit = round2(totalDailyProfit / totalTasks);
+    const min = 0.018; 
+const max = 0.02;  
+const dailyRate = min + Math.random() * (max - min); 
+const totalDailyProfit = Number(profile.balance) * dailyRate;
+const totalTasks = Number(vip.daily_tasks) || 5;
+const profit = round2(totalDailyProfit / totalTasks);
+
 
 
   const { data: updated, error } = await supabaseAdmin
