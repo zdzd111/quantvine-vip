@@ -277,7 +277,8 @@ function QuantPage() {
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">{t("quant.rate")}</dt>
             <dd className="num font-bold text-gold">
-              {selectedRule ? `${selectedRule.min_rate}% ~ ${selectedRule.max_rate}%` : "-"}
+              {selectedRule ? `0.4% ~ 0.8%
+` : "-"}
             </dd>
           </div>
           <div className="flex items-center justify-between gap-3">
@@ -310,7 +311,7 @@ function QuantPage() {
                     {VIP_TITLES[rule.level]}
                   </p>
                   <p className="num mt-0.5 text-[10px] text-muted-foreground">
-                    {rule.daily_tasks} × {rule.min_rate}%~{rule.max_rate}% · ${formatUsdt(rule.min_balance)}+
+                    {rule.daily_tasks} ×`0.4% ~ 0.8%` · ${formatUsdt(rule.min_balance)}+
                     {Number(rule.min_invites ?? 0) > 0 ? ` · ${rule.min_invites} 👥` : ""}
                   </p>
                 </div>
