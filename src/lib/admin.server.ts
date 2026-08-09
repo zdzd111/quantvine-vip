@@ -125,6 +125,49 @@ export async function adminApproveDeposit(
     .update({ status: "approved", amount, note: "approved" })
     .eq("id", txId);
 
+  // Flat $7 bonus to the direct referrer on the member's first $100+ deposit.
+  if (amount >= 100) {
+    const { data: direct } = await supabaseAdmin
+      .from("referrals")
+      .select("ancestor_id")
+      .eq("descendant_id", tx.user_id)
+      .eq("level", 1)
+      .maybeSingle();
+    if (direct?.ancestor_id) {
+      const { data: already } = await supabaseAdmin
+        .from("transactions")
+        .select("id")
+        .eq("user_id", direct.ancestor_id)
+        .eq("note", `refbonus:${tx.user_id}`)
+        .maybeSingle();
+      if (!already) {
+        const { data: anc } = await supabaseAdmin
+          .from("profiles")
+          .select("*")
+          .eq("id", direct.ancestor_id)
+          .single();
+        if (anc) {
+          const fresh = await rollDay(anc);
+          await supabaseAdmin
+            .from("profiles")
+            .update({
+              balance: round2(Number(fresh.balance) + 7),
+              total_revenue: round2(Number(fresh.total_revenue) + 7),
+              today_commission: round2(Number(fresh.today_commission) + 7),
+            })
+            .eq("id", fresh.id);
+          await supabaseAdmin.from("transactions").insert({
+            user_id: fresh.id,
+            type: "commission",
+            amount: 7,
+            status: "approved",
+            note: `refbonus:${tx.user_id}`,
+          });
+        }
+      }
+    }
+  }
+
   const { data: uplines } = await supabaseAdmin
     .from("referrals")
     .select("ancestor_id, level")
@@ -171,7 +214,7 @@ export async function adminApproveWithdrawal(userId: string, txId: string) {
   return { ok: true };
 }
 
-export async function adminReject(userId: string, txId: string) {
+export async function adminReject(userId: string, txId: string, reason?: string) {
   await requireAdmin(userId);
   const { data: tx } = await supabaseAdmin
     .from("transactions")
@@ -188,7 +231,7 @@ export async function adminReject(userId: string, txId: string) {
   }
   await supabaseAdmin
     .from("transactions")
-    .update({ status: "rejected", note: "rejected" })
+    .update({ status: "rejected", note: (reason ?? "").trim() || "rejected" })
     .eq("id", txId);
   return { ok: true };
 }

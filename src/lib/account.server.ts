@@ -339,6 +339,9 @@ export async function getTeam(userId: string) {
 
   return {
     inviteCode: profile.invite_code,
+    activeInvites: await getActiveInvites(userId),
+    balance: Number(profile.balance),
+    vipLevel: profile.vip_level,
     todayCommission: Number(profile.today_commission),
     totalCommission,
     levels,
