@@ -1,10 +1,11 @@
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabase } from "@/integrations/supabase/client";
+
 import { COMMISSION_DEPOSIT, loadProfile, rollDay } from "./account.server";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export async function isAdmin(userId: string) {
-  const { data } = await supabaseAdmin
+  const { data } = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
@@ -19,7 +20,7 @@ export async function requireAdmin(userId: string) {
 
 /** One-time bootstrap: the very first signed-in user may claim admin. */
 export async function claimAdmin(userId: string) {
-  const { error } = await supabaseAdmin
+  const { error } = await supabase
     .from("user_roles")
     .insert({ user_id: userId, role: "admin" });
   if (error && !error.message.includes("duplicate")) {
@@ -32,7 +33,7 @@ export async function claimAdmin(userId: string) {
 async function attachUsers<T extends { user_id: string }>(rows: T[]) {
   const ids = [...new Set(rows.map((r) => r.user_id))];
   if (!ids.length) return rows.map((r) => ({ ...r, user: null }));
-  const { data: profiles } = await supabaseAdmin
+  const { data: profiles } = await supabase
     .from("profiles")
     .select("id, username, public_id, vip_level, balance")
     .in("id", ids);
@@ -44,13 +45,13 @@ export async function adminOverview(userId: string) {
   await requireAdmin(userId);
   const [users, pendingDeposits, pendingWithdrawals, deposits, wallet, adjust] =
     await Promise.all([
-      supabaseAdmin.from("profiles").select("*", { count: "exact", head: true }),
-      supabaseAdmin
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase
         .from("transactions")
         .select("*", { count: "exact", head: true })
         .eq("type", "deposit")
         .eq("status", "pending"),
-      supabaseAdmin
+      supabase
         .from("transactions")
         .select("*", { count: "exact", head: true })
         .eq("type", "withdrawal")
