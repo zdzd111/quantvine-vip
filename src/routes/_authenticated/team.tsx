@@ -58,6 +58,26 @@ function TeamPage() {
     <div className="space-y-5 px-4 pt-5">
       <h1 className="text-lg font-extrabold">فريقي</h1>
 
+      <section className="panel space-y-2 border border-gold/40 p-4">
+        <p className="text-sm font-black text-gold">ادعُ صديقاً يشحن $100 واكسب $7 فوراً</p>
+        <div className="flex items-center justify-between gap-2">
+          <span className="num rounded-lg bg-elevated px-3 py-1.5 text-xs font-bold">
+            عدد الأصدقاء: {data?.activeInvites ?? 0}
+          </span>
+          <button
+            type="button"
+            onClick={() => copy(link, "تم نسخ رابط الدعوة")}
+            className="gold-surface rounded-lg px-3 py-1.5 text-xs font-black"
+          >
+            مشاركة الرابط 🔗
+          </button>
+        </div>
+      </section>
+
+      <section className="panel p-4 text-xs font-bold leading-relaxed">
+        ادعُ 3 أصدقاء ($100+) واحتفظ بـ $200 لفتح VIP2
+      </section>
+
       <section className="panel space-y-4 p-4">
         <div className="flex items-center gap-2 text-sm font-bold">
           <QrCode className="h-4 w-4 text-gold" />

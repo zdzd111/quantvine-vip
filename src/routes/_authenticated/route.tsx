@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { BottomNav } from "@/components/BottomNav";
+import { WelcomeModal } from "@/components/WelcomeModal";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -22,6 +23,7 @@ function AuthenticatedLayout() {
         <Outlet />
       </div>
       {!isAdmin && <BottomNav />}
+      {!isAdmin && <WelcomeModal />}
     </div>
   );
 }
