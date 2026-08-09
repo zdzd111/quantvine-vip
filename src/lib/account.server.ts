@@ -207,12 +207,12 @@ export async function runQuant(userId: string) {
     };
   }
 
-    const min = 0.018; 
-const max = 0.02;  
-const dailyRate = min + Math.random() * (max - min); 
-const totalDailyProfit = Number(profile.balance) * dailyRate;
-const totalTasks = Number(vip.daily_tasks) || 5;
-const profit = round2(totalDailyProfit / totalTasks);
+        // نفترض أن نسبة الـ VIP مخزنة في vip.daily_rate أو نأخذ النسبة المئوية المخصصة للمستوى
+    const dailyRate = Number(vip.daily_rate) || 0.02; // النسبة الإجمالية لليوم (مثلاً 2%)
+    const totalDailyProfit = Number(profile.balance) * dailyRate;
+    const totalTasks = Number(vip.daily_tasks) || 5;
+    const profit = round2(totalDailyProfit / totalTasks);
+
 
 
 
