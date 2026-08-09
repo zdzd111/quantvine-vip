@@ -1,5 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useI18n } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SecurityBadges } from "@/components/SecurityBadges";
 import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -7,6 +11,7 @@ import {
   ClipboardList,
   HelpCircle,
   Info,
+  KeyRound,
   LogOut,
   ShieldCheck,
   Users,
@@ -123,6 +128,12 @@ function ProfilePage() {
         )}
       </section>
 
+      <ChangePassword />
+
+      <LanguageSwitcher />
+
+      <SecurityBadges />
+
       <button
         type="button"
         onClick={signOut}
@@ -132,5 +143,89 @@ function ProfilePage() {
         تسجيل الخروج
       </button>
     </div>
+  );
+}
+
+function ChangePassword() {
+  const { t } = useI18n();
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function save() {
+    if (next.length < 6) {
+      toast.error(t("profile.password_short"));
+      return;
+    }
+    if (next !== confirm) {
+      toast.error(t("profile.password_mismatch"));
+      return;
+    }
+    setBusy(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const email = userData.user?.email;
+      if (!email) throw new Error("no email");
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password: current,
+      });
+      if (signInError) {
+        toast.error(t("profile.password_wrong"));
+        return;
+      }
+      const { error } = await supabase.auth.updateUser({ password: next });
+      if (error) throw error;
+      toast.success(t("profile.password_ok"));
+      setCurrent("");
+      setNext("");
+      setConfirm("");
+    } catch {
+      toast.error(t("profile.password_wrong"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const inputClass =
+    "num w-full rounded-xl border border-border bg-elevated px-3 py-3 text-sm outline-none focus:border-gold";
+
+  return (
+    <section className="panel space-y-2 p-4">
+      <p className="flex items-center gap-2 text-sm font-bold">
+        <KeyRound className="h-4 w-4 text-gold" />
+        {t("profile.change_password")}
+      </p>
+      <input
+        type="password"
+        value={current}
+        onChange={(event) => setCurrent(event.target.value)}
+        placeholder={t("profile.current_password")}
+        className={inputClass}
+      />
+      <input
+        type="password"
+        value={next}
+        onChange={(event) => setNext(event.target.value)}
+        placeholder={t("profile.new_password")}
+        className={inputClass}
+      />
+      <input
+        type="password"
+        value={confirm}
+        onChange={(event) => setConfirm(event.target.value)}
+        placeholder={t("profile.confirm_password")}
+        className={inputClass}
+      />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={save}
+        className="gold-surface w-full rounded-xl py-2.5 text-sm font-black disabled:opacity-50"
+      >
+        {busy ? t("common.sending") : t("profile.save_password")}
+      </button>
+    </section>
   );
 }
