@@ -205,13 +205,11 @@ export async function runQuant(userId: string) {
       required: Number(vip.min_balance),
       profile,
     };
-  }
+  }const min = 0.018 / 5;
+const max = 0.02 / 5;
+const rate = min + Math.random() * (max - min);
+const profit = round2(Number(profile.balance) * rate);
 
-        // نفترض أن نسبة الـ VIP مخزنة في vip.daily_rate أو نأخذ النسبة المئوية المخصصة للمستوى
-    const dailyRate = Number(vip.daily_rate) || 0.02; // النسبة الإجمالية لليوم (مثلاً 2%)
-    const totalDailyProfit = Number(profile.balance) * dailyRate;
-    const totalTasks = Number(vip.daily_tasks) || 5;
-    const profit = round2(totalDailyProfit / totalTasks);
 
 
 
