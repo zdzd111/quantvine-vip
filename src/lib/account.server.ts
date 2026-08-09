@@ -205,10 +205,8 @@ export async function runQuant(userId: string) {
       required: Number(vip.min_balance),
       profile,
     };
-  }const min = 0.018 / 5;
-const max = 0.02 / 5;
-const rate = min + Math.random() * (max - min);
-const profit = round2(Number(profile.balance) * rate);
+const profit = round2(Number(profile.balance) * 0.004);
+
 
 
 
