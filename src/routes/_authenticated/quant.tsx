@@ -224,16 +224,14 @@ function QuantPage() {
           </button>
         </div>
         <p className="text-center text-xs text-muted-foreground">
-          {running
-  ? t("quant.running")
-  : exhausted
-    ? t("quant.exhausted_toast")
-    : lowBalance
-      ? t("quant.low_balance")
-      : null
-}
-
-
+  {running
+    ? t("quant.running")
+    : exhausted
+      ? t("quant.exhausted_toast")
+      : lowBalance
+        ? t("quant.low_balance")
+        : null}
+</p>
         {running && (
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div className="gold-surface h-full transition-all" style={{ width: `${progress}%` }} />
