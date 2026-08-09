@@ -5,6 +5,7 @@ import { ArrowDownToLine, ArrowUpFromLine, Wallet } from "lucide-react";
 import { fetchTransactions } from "@/lib/account.functions";
 import { useAccount } from "@/lib/use-account";
 import { formatUsdt } from "@/lib/market";
+import { TxProgress } from "@/components/TxProgress";
 
 export const Route = createFileRoute("/_authenticated/wallet")({
   head: () => ({
@@ -49,7 +50,7 @@ function WalletPage() {
 
       <section className="panel gold-surface p-4">
         <p className="text-xs font-semibold opacity-80">الأصول المتاحة (USDT)</p>
-        <p className="num mt-1 text-3xl font-black">{formatUsdt(account?.profile.balance ?? 0)}</p>
+        <p className="num mt-1 text-3xl font-black">${formatUsdt(account?.profile.balance ?? 0)}</p>
         <div className="mt-4 grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-primary-foreground/10 p-2">
             <p className="text-[10px] font-semibold opacity-80">إجمالي الإيرادات</p>
@@ -92,10 +93,8 @@ function WalletPage() {
             {transactions.map((tx) => {
               const negative = tx.type === "withdrawal" || Number(tx.amount) < 0;
               return (
-                <li
-                  key={tx.id}
-                  className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 border-b border-border px-4 py-3 last:border-0"
-                >
+                <li key={tx.id} className="border-b border-border px-4 py-3 last:border-0">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-bold">{TYPE_LABEL[tx.type] ?? tx.type}</p>
                     <p className="num text-[11px] text-muted-foreground">
@@ -104,11 +103,19 @@ function WalletPage() {
                   </div>
                   <div className="shrink-0 text-left">
                     <p className={`num text-sm font-black ${negative ? "text-destructive" : "text-success"}`}>
-                      {negative ? "-" : "+"}
-                      {formatUsdt(Math.abs(Number(tx.amount)))}
+                      {negative ? "-" : "+"}${formatUsdt(Math.abs(Number(tx.amount)))}
                     </p>
                     <p className="text-[11px] text-muted-foreground">{STATUS_LABEL[tx.status]}</p>
                   </div>
+                  </div>
+                  {(tx.type === "deposit" || tx.type === "withdrawal") && (
+                    <TxProgress status={tx.status} />
+                  )}
+                  {tx.status === "rejected" && tx.note && tx.note !== "rejected" && (
+                    <p className="mt-1.5 rounded-lg bg-destructive/10 px-2 py-1 text-[10px] font-semibold text-destructive">
+                      سبب الرفض: {tx.note}
+                    </p>
+                  )}
                 </li>
               );
             })}

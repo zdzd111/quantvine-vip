@@ -46,10 +46,12 @@ export const approveWithdrawal = createServerFn({ method: "POST" })
 
 export const rejectRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { txId: string }) => z.object({ txId: z.string().uuid() }).parse(input))
+  .inputValidator((input: { txId: string; reason?: string }) =>
+    z.object({ txId: z.string().uuid(), reason: z.string().max(200).optional() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const { adminReject } = await import("./admin.server");
-    return adminReject(context.userId, data.txId);
+    return adminReject(context.userId, data.txId, data.reason);
   });
 
 export const fetchAdminUsers = createServerFn({ method: "POST" })
@@ -85,7 +87,7 @@ export const setUserVip = createServerFn({ method: "POST" })
 export const setSetting = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { key: string; value: string }) =>
-    z.object({ key: z.enum(["deposit_wallet", "profit_adjust"]), value: z.string().max(120) }).parse(input),
+    z.object({ key: z.enum(["deposit_wallet", "deposit_wallet_trc20", "deposit_wallet_bep20", "profit_adjust"]), value: z.string().max(120) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { adminSetSetting } = await import("./admin.server");

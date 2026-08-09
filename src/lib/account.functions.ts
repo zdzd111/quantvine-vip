@@ -18,22 +18,33 @@ export const startQuant = createServerFn({ method: "POST" })
 
 export const createDeposit = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { amount: number; proofPath: string | null }) =>
-    z.object({ amount: z.number().positive().max(1_000_000), proofPath: z.string().max(300).nullable() }).parse(input),
+  .inputValidator((input: { amount: number; network: "trc20" | "bep20" }) =>
+    z
+      .object({
+        amount: z.number().positive().max(1_000_000),
+        network: z.enum(["trc20", "bep20"]),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { submitDeposit } = await import("./account.server");
-    return submitDeposit(context.userId, data.amount, data.proofPath);
+    return submitDeposit(context.userId, data.amount, data.network);
   });
 
 export const createWithdrawal = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { amount: number; wallet: string }) =>
-    z.object({ amount: z.number().positive().max(1_000_000), wallet: z.string().trim().min(20).max(80) }).parse(input),
+  .inputValidator((input: { amount: number; wallet: string; network: "trc20" | "bep20" }) =>
+    z
+      .object({
+        amount: z.number().positive().max(1_000_000),
+        wallet: z.string().trim().min(20).max(80),
+        network: z.enum(["trc20", "bep20"]),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { submitWithdrawal } = await import("./account.server");
-    return submitWithdrawal(context.userId, data.amount, data.wallet);
+    return submitWithdrawal(context.userId, data.amount, data.wallet, data.network);
   });
 
 export const fetchTeam = createServerFn({ method: "GET" })

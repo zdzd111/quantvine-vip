@@ -191,6 +191,7 @@ export type Database = {
           max_balance: number
           max_rate: number
           min_balance: number
+          min_invites: number
           min_rate: number
         }
         Insert: {
@@ -199,6 +200,7 @@ export type Database = {
           max_balance: number
           max_rate: number
           min_balance: number
+          min_invites?: number
           min_rate: number
         }
         Update: {
@@ -207,6 +209,7 @@ export type Database = {
           max_balance?: number
           max_rate?: number
           min_balance?: number
+          min_invites?: number
           min_rate?: number
         }
         Relationships: []

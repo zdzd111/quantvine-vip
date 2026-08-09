@@ -6,60 +6,75 @@ import { toast } from "sonner";
 import { createWithdrawal } from "@/lib/account.functions";
 import { useAccount } from "@/lib/use-account";
 import { formatUsdt } from "@/lib/market";
+import { MIN_WITHDRAW, NETWORKS, type NetworkId } from "@/lib/networks";
+import { useI18n } from "@/lib/i18n";
+import { playSuccess } from "@/lib/sfx";
+import { SecurityBadges } from "@/components/SecurityBadges";
 
 export const Route = createFileRoute("/_authenticated/withdraw")({
   head: () => ({
     meta: [
       { title: "ينسحب — Quantvine" },
-      { name: "description", content: "اسحب أرباحك بعنوان USDT TRC-20 مع تحقق فوري من الرصيد المتاح." },
+      {
+        name: "description",
+        content: "اسحب أرباحك عبر شبكة USDT TRC-20 أو BEP-20 بحد أدنى $10 مع تحقق فوري من الرصيد.",
+      },
       { property: "og:title", content: "ينسحب — Quantvine" },
-      { property: "og:description", content: "سحب أرباح USDT عبر شبكة TRC-20." },
+      { property: "og:description", content: "سحب أرباح USDT عبر TRC-20 أو BEP-20." },
     ],
   }),
   component: WithdrawPage,
 });
 
-const MIN_WITHDRAW = 10;
-
 function WithdrawPage() {
+  const { t } = useI18n();
   const { data } = useAccount();
   const submit = useServerFn(createWithdrawal);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const [network, setNetwork] = useState<NetworkId>("trc20");
   const [wallet, setWallet] = useState("");
   const [amount, setAmount] = useState("");
   const [busy, setBusy] = useState(false);
 
   const balance = Number(data?.profile.balance ?? 0);
+  const active = NETWORKS.find((n) => n.id === network)!;
 
   async function handleSubmit() {
     const value = Number(amount);
     const address = wallet.trim();
-    if (address.length < 26 || !address.startsWith("T")) {
-      toast.error("عنوان محفظة TRC-20 غير صالح");
+    if (!active.validate(address)) {
+      toast.error(t("withdraw.bad_address"));
       return;
     }
     if (!Number.isFinite(value) || value < MIN_WITHDRAW) {
-      toast.error(`الحد الأدنى للسحب ${MIN_WITHDRAW} USDT`);
+      toast.error(t("withdraw.min_error"));
       return;
     }
     if (value > balance) {
-      toast.error("الرصيد المتاح غير كافٍ");
+      toast.error(t("withdraw.insufficient"));
       return;
     }
     setBusy(true);
     try {
-      const result = await submit({ data: { amount: value, wallet: address } });
+      const result = await submit({ data: { amount: value, wallet: address, network } });
+      if (result && "ok" in result && result.ok === false) {
+        toast.error(
+          result.reason === "min" ? t("withdraw.min_error") : t("withdraw.insufficient"),
+        );
+        return;
+      }
       if (result && "status" in result && result.status === "insufficient") {
-        toast.error("الرصيد المتاح غير كافٍ");
+        toast.error(t("withdraw.insufficient"));
         return;
       }
       await queryClient.invalidateQueries({ queryKey: ["account"] });
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      toast.success("تم إرسال طلب السحب، سيتم مراجعته قريباً");
+      playSuccess();
+      toast.success(t("withdraw.sent"));
       navigate({ to: "/wallet" });
     } catch {
-      toast.error("تعذر إرسال الطلب، حاول مرة أخرى");
+      toast.error(t("withdraw.insufficient"));
     } finally {
       setBusy(false);
     }
@@ -67,28 +82,47 @@ function WithdrawPage() {
 
   return (
     <div className="space-y-5 px-4 pt-5">
-      <h1 className="text-lg font-extrabold">ينسحب</h1>
+      <h1 className="text-lg font-extrabold">{t("withdraw.title")}</h1>
 
       <section className="panel gold-surface p-4">
-        <p className="text-xs font-semibold opacity-80">الأصول المتاحة (USDT)</p>
-        <p className="num mt-1 text-3xl font-black">{formatUsdt(balance)}</p>
+        <p className="text-xs font-semibold opacity-80">{t("common.usdt")}</p>
+        <p className="num mt-1 text-3xl font-black">${formatUsdt(balance)}</p>
       </section>
 
       <section className="panel space-y-3 p-4">
+        <p className="text-xs font-semibold text-muted-foreground">{t("common.network")}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {NETWORKS.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setNetwork(item.id)}
+              className={`rounded-xl border px-2 py-2.5 text-center transition-colors ${
+                network === item.id
+                  ? "gold-surface border-transparent"
+                  : "border-border bg-elevated text-muted-foreground"
+              }`}
+            >
+              <span className="num block text-xs font-black">{item.label}</span>
+              <span className="block text-[10px] font-semibold opacity-80">{item.chain}</span>
+            </button>
+          ))}
+        </div>
+
         <label className="block text-sm font-bold" htmlFor="wallet">
-          عنوان المحفظة (USDT · TRC-20)
+          {t("withdraw.address")} · <span className="num">{active.label}</span>
         </label>
         <input
           id="wallet"
           value={wallet}
           onChange={(event) => setWallet(event.target.value)}
-          placeholder="T..."
+          placeholder={network === "trc20" ? "T..." : "0x..."}
           maxLength={80}
           className="num w-full rounded-xl border border-border bg-elevated px-3 py-3 text-sm outline-none focus:border-gold"
         />
 
         <label className="block text-sm font-bold" htmlFor="wamount">
-          مبلغ السحب (USDT)
+          {t("withdraw.amount")}
         </label>
         <input
           id="wamount"
@@ -104,13 +138,10 @@ function WithdrawPage() {
           onClick={() => setAmount(String(balance))}
           className="text-xs font-bold text-gold"
         >
-          سحب الكل
+          {t("withdraw.all")}
         </button>
 
-        <p className="text-[11px] leading-relaxed text-muted-foreground">
-          الحد الأدنى للسحب <span className="num">{MIN_WITHDRAW}</span> USDT. تتم مراجعة الطلبات
-          يدوياً وقد تستغرق حتى 24 ساعة.
-        </p>
+        <p className="text-[11px] leading-relaxed text-muted-foreground">{t("withdraw.min")}</p>
 
         <button
           type="button"
@@ -118,9 +149,11 @@ function WithdrawPage() {
           onClick={handleSubmit}
           className="gold-surface w-full rounded-xl py-3 text-sm font-black disabled:opacity-50"
         >
-          {busy ? "جارٍ الإرسال..." : "تأكيد السحب"}
+          {busy ? t("common.sending") : t("withdraw.submit")}
         </button>
       </section>
+
+      <SecurityBadges />
     </div>
   );
 }

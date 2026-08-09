@@ -67,15 +67,75 @@ export async function getSetting(key: string): Promise<string | null> {
   return data?.value ?? null;
 }
 
+
+/** Counts level-1 referrals whose approved deposits total $100 or more. */
+export async function getActiveInvites(userId: string): Promise<number> {
+  const { data: rows } = await supabaseAdmin
+    .from("referrals")
+    .select("descendant_id")
+    .eq("ancestor_id", userId)
+    .eq("level", 1);
+  const ids = (rows ?? []).map((r) => r.descendant_id);
+  if (!ids.length) return 0;
+  const { data: deps } = await supabaseAdmin
+    .from("transactions")
+    .select("user_id, amount")
+    .in("user_id", ids)
+    .eq("type", "deposit")
+    .eq("status", "approved");
+  const totals = new Map<string, number>();
+  for (const d of deps ?? []) {
+    totals.set(d.user_id, (totals.get(d.user_id) ?? 0) + Number(d.amount));
+  }
+  return [...totals.values()].filter((v) => v >= 100).length;
+}
+
+type VipRule = {
+  level: number;
+  daily_tasks: number;
+  min_rate: number;
+  max_rate: number;
+  min_balance: number;
+  max_balance: number;
+  min_invites: number;
+};
+
+export function eligibleLevel(
+  balance: number,
+  activeInvites: number,
+  levels: VipRule[],
+): number {
+  let best = 1;
+  for (const rule of levels) {
+    if (balance >= Number(rule.min_balance) && activeInvites >= Number(rule.min_invites ?? 0)) {
+      best = Math.max(best, rule.level);
+    }
+  }
+  return best;
+}
+
 export async function getAccount(userId: string) {
-  const profile = await loadProfile(userId);
-  const [{ data: levels }, { data: roles }] = await Promise.all([
+  let profile = await loadProfile(userId);
+  const [{ data: levels }, { data: roles }, activeInvites] = await Promise.all([
     supabaseAdmin.from("vip_levels").select("*").order("level"),
     supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
+    getActiveInvites(userId),
   ]);
+  const rules = (levels ?? []) as VipRule[];
+  const target = eligibleLevel(Number(profile.balance), activeInvites, rules);
+  if (target !== profile.vip_level) {
+    const { data: synced } = await supabaseAdmin
+      .from("profiles")
+      .update({ vip_level: target })
+      .eq("id", userId)
+      .select("*")
+      .single();
+    if (synced) profile = synced as ProfileRow;
+  }
   return {
     profile,
-    levels: levels ?? [],
+    levels: rules,
+    activeInvites,
     isAdmin: (roles ?? []).some((r) => r.role === "admin"),
     depositWallet: (await getSetting("deposit_wallet")) ?? "",
   };
@@ -122,13 +182,14 @@ async function payCommissions(
 }
 
 export async function runQuant(userId: string) {
-  const profile = await loadProfile(userId);
-  const { data: vip } = await supabaseAdmin
-    .from("vip_levels")
-    .select("*")
-    .eq("level", profile.vip_level)
-    .single();
+  const account = await getAccount(userId);
+  const profile = account.profile;
+  const vip = account.levels.find((l) => l.level === profile.vip_level);
   if (!vip) throw new Error("VIP level missing");
+
+  if (Number(profile.balance) < 35) {
+    return { status: "insufficient" as const, required: 35, profile };
+  }
 
   if (profile.quant_count >= vip.daily_tasks) {
     return { status: "exhausted" as const, profile };
@@ -179,25 +240,34 @@ export async function runQuant(userId: string) {
   };
 }
 
-export async function submitDeposit(userId: string, amount: number, proofPath: string | null) {
+export async function submitDeposit(
+  userId: string,
+  amount: number,
+  network: "trc20" | "bep20",
+) {
   if (!(amount > 0)) throw new Error("قيمة غير صحيحة");
-  const wallet = await getSetting("deposit_wallet");
+  const wallet = await getSetting(`deposit_wallet_${network}`);
   const { error } = await supabaseAdmin.from("transactions").insert({
     user_id: userId,
     type: "deposit",
     amount: round2(amount),
     status: "pending",
     wallet_address: wallet,
-    proof_path: proofPath,
+    note: `network:${network}`,
   });
   if (error) throw new Error(error.message);
   return { ok: true };
 }
 
-export async function submitWithdrawal(userId: string, amount: number, wallet: string) {
+export async function submitWithdrawal(
+  userId: string,
+  amount: number,
+  wallet: string,
+  network: "trc20" | "bep20" = "trc20",
+) {
   const profile = await loadProfile(userId);
   const value = round2(amount);
-  if (!(value > 0)) throw new Error("قيمة غير صحيحة");
+  if (!(value >= 10)) return { ok: false as const, reason: "min" as const };
   if (value > Number(profile.balance)) {
     return { ok: false as const, reason: "insufficient" as const };
   }
@@ -217,6 +287,7 @@ export async function submitWithdrawal(userId: string, amount: number, wallet: s
     amount: value,
     status: "pending",
     wallet_address: wallet.trim(),
+    note: `network:${network}`,
   });
   if (error) throw new Error(error.message);
   return { ok: true as const };
@@ -268,6 +339,9 @@ export async function getTeam(userId: string) {
 
   return {
     inviteCode: profile.invite_code,
+    activeInvites: await getActiveInvites(userId),
+    balance: Number(profile.balance),
+    vipLevel: profile.vip_level,
     todayCommission: Number(profile.today_commission),
     totalCommission,
     levels,
