@@ -154,9 +154,8 @@ function AuthPage() {
         </button>
       </div>
 
-      <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
-        الإيداع والسحب عبر شبكة USDT TRC-20 · العوائد تعتمد على مستوى VIP وأداء السوق.
-      </p>
+      <SecurityBadges />
+
     </main>
   );
 }
