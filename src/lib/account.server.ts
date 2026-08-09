@@ -48,14 +48,17 @@ export async function rollDay(profile: ProfileRow): Promise<ProfileRow> {
   return data as ProfileRow;
 }
 
-export async function loadProfile(userId: string): Promise<ProfileRow> {
+export async function loadProfile(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
+    
   if (error) throw new Error(error.message);
-  return rollDay(data as ProfileRow);
+  
+
+  return await rollDay(data as ProfileRow);
 }
 
 export async function getSetting(key: string): Promise<string | null> {
