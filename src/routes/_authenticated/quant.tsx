@@ -277,9 +277,7 @@ function QuantPage() {
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">{t("quant.rate")}</dt>
             <dd className="num font-bold text-gold">
-              0.4% ~ 0.8%
-          
-` : "-"}
+              0.4% ~ 0.8
             </dd>
           </div>
           <div className="flex items-center justify-between gap-3">
