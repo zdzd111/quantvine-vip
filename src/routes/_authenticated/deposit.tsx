@@ -1,9 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Copy } from "lucide-react";
+import { Copy, ChevronRight } from "lucide-react";
+
 import { createDeposit } from "@/lib/account.functions";
 import { NETWORKS, DEPOSIT_PRESETS, type NetworkId } from "@/lib/networks";
 import { useI18n } from "@/lib/i18n";
