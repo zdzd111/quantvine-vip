@@ -76,11 +76,7 @@ function QuantPage() {
   const [remaining, setRemaining] = useState(() => msUntilReset());
   const [win, setWin] = useState<{ profit: number; rate: number } | null>(null);
 
-  const dailyRate = 0.02; 
-  const userBalance = data?.profile?.balance || 0; 
-  const totalDailyProfit = userBalance * dailyRate; 
-  const totalTasks = 5; 
-  const profitPerClick = totalDailyProfit / totalTasks;
+  const [lastProfit, setLastProfit] = useState(0);
 
 
   useEffect(() => {
