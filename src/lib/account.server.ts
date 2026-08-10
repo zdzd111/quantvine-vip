@@ -329,7 +329,8 @@ export async function getTeam(userId: string) {
           .from("transactions")
           .select("amount")
           .in("user_id", ids)
-          .eq("type", "deposit"
+          .eq("type", "deposit")
+          .eq("status", "approved");
         deposits = round2((dep ?? []).reduce((s, d) => s + Number(d.amount), 0));
       }
       const commission = round2(
