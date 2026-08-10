@@ -68,9 +68,12 @@ function QuantPage() {
   const [remaining, setRemaining] = useState(() => msUntilReset());
   const [win, setWin] = useState<{ profit: number; rate: number } | null>(null);
 
-  useEffect(() => {
-    if (data?.profile.vip_level) setSelectedVip(data.profile.vip_level);
-  }, [data?.profile.vip_level]);
+  const dailyRate = 0.02; 
+  const userBalance = data?.profile?.balance || 0; 
+  const totalDailyProfit = userBalance * dailyRate; 
+  const totalTasks = 5; 
+  const profitPerClick = totalDailyProfit / totalTasks;
+
 
   useEffect(() => {
     const timer = setInterval(() => setFeed(buildFeed()), 12000);
