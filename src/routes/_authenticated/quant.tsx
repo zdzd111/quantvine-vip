@@ -283,13 +283,7 @@ function QuantPage() {
           <div className="flex items-center justify-between gap-3">
             <dt className="shrink-0 text-muted-foreground">{t("quant.requirement")}</dt>
             <dd className="num text-end text-xs font-bold">
-              {selectedRule
-                ? `$${formatUsdt(selectedRule.min_balance)}+${
-                    Number(selectedRule.min_invites ?? 0) > 0
-                      ? ` · ${selectedRule.min_invites} أصدقاء ($100+)`
-                      : ""
-                  }`
-                : "-"}
+              {selectedRule ? requirementLabel(selectedRule) : "-"}
             </dd>
           </div>
         </dl>
