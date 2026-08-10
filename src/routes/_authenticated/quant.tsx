@@ -311,8 +311,7 @@ function QuantPage() {
                     {VIP_TITLES[rule.level]}
                   </p>
                   <p className="num mt-0.5 text-[10px] text-muted-foreground">
-                    {"0.4% ~ 0.8%"}
-                    {Number(rule.min_invites ?? 0) > 0 ? ` · ${rule.min_invites} 👥` : ""}
+                    {"0.4% ~ 0.8%"
                   </p>
                 </div>
                 <span
