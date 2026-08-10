@@ -69,7 +69,12 @@ function DepositPage() {
 
   return (
     <div className="space-y-5 px-4 pt-5">
+      <Link to="/wallet" className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground">
+        <ChevronRight className="h-4 w-4" />
+        {t("nav.wallet")}
+      </Link>
       <h1 className="text-lg font-extrabold">{t("deposit.title")}</h1>
+
 
       <section className="panel space-y-3 p-4">
         <p className="text-xs font-semibold text-muted-foreground">{t("common.network")}</p>
