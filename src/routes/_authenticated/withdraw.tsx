@@ -82,7 +82,12 @@ function WithdrawPage() {
 
   return (
     <div className="space-y-5 px-4 pt-5">
+      <Link to="/wallet" className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground">
+        <ChevronRight className="h-4 w-4" />
+        {t("nav.wallet")}
+      </Link>
       <h1 className="text-lg font-extrabold">{t("withdraw.title")}</h1>
+
 
       <section className="panel gold-surface p-4">
         <p className="text-xs font-semibold opacity-80">{t("common.usdt")}</p>
