@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import {
   UserPlus,
   Handshake,
-  ArrowUpFromLine,
-  ArrowDownToLine,
+  Wallet,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+
 import { buildMarket, formatPrice, formatUsdt, type MarketRow } from "@/lib/market";
 import { useAccount } from "@/lib/use-account";
 import { useI18n } from "@/lib/i18n";
