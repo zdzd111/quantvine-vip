@@ -39,11 +39,11 @@ function requirementLabel(rule: { min_balance: number | string; min_invites?: nu
   return invites > 0 ? base + " · " + invites + " أصدقاء ($100+)" : base;
 }
 
-/** Profit rate range text for a VIP rule. */
+/** Profit rate range text for a VIP rule (rates are stored as percentages). */
 function rateLabel(rule?: { min_rate: number | string; max_rate: number | string }) {
   if (!rule) return "-";
-  const min = (Number(rule.min_rate) * 100).toFixed(1);
-  const max = (Number(rule.max_rate) * 100).toFixed(1);
+  const min = Number(rule.min_rate).toFixed(1);
+  const max = Number(rule.max_rate).toFixed(1);
   return min + "% ~ " + max + "%";
 }
 
@@ -76,11 +76,7 @@ function QuantPage() {
   const [remaining, setRemaining] = useState(() => msUntilReset());
   const [win, setWin] = useState<{ profit: number; rate: number } | null>(null);
 
-  const dailyRate = 0.02; 
-  const userBalance = data?.profile?.balance || 0; 
-  const totalDailyProfit = userBalance * dailyRate; 
-  const totalTasks = 5; 
-  const profitPerClick = totalDailyProfit / totalTasks;
+  const [lastProfit, setLastProfit] = useState(0);
 
 
   useEffect(() => {
@@ -160,7 +156,8 @@ function QuantPage() {
         toast.error(t("quant.low_balance"));
       } else {
         playSuccess();
-        setWin({ profit: profitPerClick, rate: result.rate });
+        setLastProfit(result.profit);
+        setWin({ profit: result.profit, rate: result.rate });
       }
       await queryClient.invalidateQueries({ queryKey: ["account"] });
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
@@ -364,7 +361,7 @@ function QuantPage() {
             </div>
             <p className="mt-3 text-sm font-black">{t("quant.success")}</p>
             <p className="num mt-2 text-2xl font-black text-gold">
-              +${formatUsdt(profitPerClick)} USDT
+              +${formatUsdt(win.profit || lastProfit)} USDT
             </p>
             <p className="num mt-1 text-[11px] text-muted-foreground">{win.rate}%</p>
             <p className="num mt-2 text-[11px] font-bold">
