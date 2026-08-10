@@ -74,7 +74,7 @@ function HomePage() {
         </p>
       </section>
 
-      <section className="grid grid-cols-4 gap-2">
+      <section className="grid grid-cols-3 gap-2">
         {ACTIONS.map(({ to, key, icon: Icon }) => (
           <Link
             key={to}
