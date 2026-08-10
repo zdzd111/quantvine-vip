@@ -35,12 +35,49 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_read: boolean
+          kind: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          kind?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          kind?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           balance: number
           created_at: string
+          email: string | null
+          full_name: string | null
           id: string
           invite_code: string
+          last_login_agent: string | null
+          last_login_at: string | null
           public_id: string
           quant_count: number
           quant_date: string
@@ -48,17 +85,23 @@ export type Database = {
           today_commission: number
           today_earnings: number
           total_revenue: number
+          total_team_deposit: number
           updated_at: string
           username: string
           vip_level: number
           wallet_address: string | null
+          withdraw_pin_hash: string | null
           yesterday_earnings: number
         }
         Insert: {
           balance?: number
           created_at?: string
+          email?: string | null
+          full_name?: string | null
           id: string
           invite_code: string
+          last_login_agent?: string | null
+          last_login_at?: string | null
           public_id: string
           quant_count?: number
           quant_date?: string
@@ -66,17 +109,23 @@ export type Database = {
           today_commission?: number
           today_earnings?: number
           total_revenue?: number
+          total_team_deposit?: number
           updated_at?: string
           username?: string
           vip_level?: number
           wallet_address?: string | null
+          withdraw_pin_hash?: string | null
           yesterday_earnings?: number
         }
         Update: {
           balance?: number
           created_at?: string
+          email?: string | null
+          full_name?: string | null
           id?: string
           invite_code?: string
+          last_login_agent?: string | null
+          last_login_at?: string | null
           public_id?: string
           quant_count?: number
           quant_date?: string
@@ -84,10 +133,12 @@ export type Database = {
           today_commission?: number
           today_earnings?: number
           total_revenue?: number
+          total_team_deposit?: number
           updated_at?: string
           username?: string
           vip_level?: number
           wallet_address?: string | null
+          withdraw_pin_hash?: string | null
           yesterday_earnings?: number
         }
         Relationships: [
