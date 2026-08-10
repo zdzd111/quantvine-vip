@@ -32,6 +32,13 @@ export const Route = createFileRoute("/_authenticated/quant")({
 
 const VIP_TITLES: Record<number, string> = { 1: "VIP1", 2: "VIP2", 3: "VIP3" };
 
+/** Balance + invite requirement text for a VIP rule. */
+function requirementLabel(rule: { min_balance: number | string; min_invites?: number | null }) {
+  const base = "$" + formatUsdt(rule.min_balance) + "+";
+  const invites = Number(rule.min_invites ?? 0);
+  return invites > 0 ? base + " · " + invites + " أصدقاء ($100+)" : base;
+}
+
 /** Milliseconds until the next 11:00 daily reset. */
 function msUntilReset(): number {
   const now = new Date();
