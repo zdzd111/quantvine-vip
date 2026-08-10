@@ -37,9 +37,9 @@ export const Route = createFileRoute("/_authenticated/home")({
 const ACTIONS = [
   { to: "/team", key: "home.invite", icon: UserPlus },
   { to: "/agency", key: "home.agency", icon: Handshake },
-  { to: "/withdraw", key: "common.withdraw", icon: ArrowUpFromLine },
-  { to: "/deposit", key: "common.deposit", icon: ArrowDownToLine },
+  { to: "/wallet", key: "nav.wallet", icon: Wallet },
 ] as const;
+
 
 function HomePage() {
   const [market, setMarket] = useState<MarketRow[]>(() => buildMarket());
