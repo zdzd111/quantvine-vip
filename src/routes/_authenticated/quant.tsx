@@ -358,7 +358,7 @@ function QuantPage() {
             </div>
             <p className="mt-3 text-sm font-black">{t("quant.success")}</p>
             <p className="num mt-2 text-2xl font-black text-gold">
-              +${formatUsdt(win.profit)} USDT
+              +${formatUsdt(profitPerClick)} USDT
             </p>
             <p className="num mt-1 text-[11px] text-muted-foreground">{win.rate}%</p>
             <p className="num mt-2 text-[11px] font-bold">
