@@ -1,13 +1,11 @@
-import { supabase } from "@/integrations/supabase/client";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-;
 
-import { COMMISSION_DEPOSIT, loadProfile, rollDay } from "./account.server";
+import { COMMISSION_DEPOSIT, loadProfile, notify, rollDay } from "./account.server";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export async function isAdmin(userId: string) {
-  const { data } = await supabase
+  const { data } = await supabaseAdmin
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
@@ -17,28 +15,33 @@ export async function isAdmin(userId: string) {
 }
 
 export async function requireAdmin(userId: string) {
-  // if (!(await isAdmin(userId))) throw new Error("Forbidden");
+  if (!(await isAdmin(userId))) throw new Error("Forbidden");
 }
-
 
 /** One-time bootstrap: the very first signed-in user may claim admin. */
 export async function claimAdmin(userId: string) {
-  const { error } = await supabase
+  const { count } = await supabaseAdmin
+    .from("user_roles")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "admin");
+  if ((count ?? 0) > 0 && !(await isAdmin(userId))) {
+    return { ok: false as const };
+  }
+  const { error } = await supabaseAdmin
     .from("user_roles")
     .insert({ user_id: userId, role: "admin" });
-  if (error && !error.message.includes("duplicate")) {
+  if (error && !error.message.toLowerCase().includes("duplicate")) {
     throw new Error(error.message);
   }
   return { ok: true as const };
 }
 
-
 async function attachUsers<T extends { user_id: string }>(rows: T[]) {
   const ids = [...new Set(rows.map((r) => r.user_id))];
   if (!ids.length) return rows.map((r) => ({ ...r, user: null }));
-  const { data: profiles } = await supabase
+  const { data: profiles } = await supabaseAdmin
     .from("profiles")
-    .select("id, username, public_id, vip_level, balance")
+    .select("id, username, public_id, vip_level, balance, email")
     .in("id", ids);
   const map = new Map((profiles ?? []).map((p) => [p.id, p]));
   return rows.map((r) => ({ ...r, user: map.get(r.user_id) ?? null }));
@@ -46,36 +49,60 @@ async function attachUsers<T extends { user_id: string }>(rows: T[]) {
 
 export async function adminOverview(userId: string) {
   await requireAdmin(userId);
-  const [users, pendingDeposits, pendingWithdrawals, deposits, wallet, adjust] =
-    await Promise.all([
-      supabase.from("profiles").select("*", { count: "exact", head: true }),
-      supabase
-        .from("transactions")
-        .select("*", { count: "exact", head: true })
-        .eq("type", "deposit")
-        .eq("status", "pending"),
-      supabase
-        .from("transactions")
-        .select("*", { count: "exact", head: true })
-        .eq("type", "withdrawal")
-        .eq("status", "pending"),
-      supabaseAdmin
-        .from("transactions")
-        .select("amount")
-        .eq("type", "deposit")
-        .eq("status", "approved"),
-      supabaseAdmin.from("app_settings").select("value").eq("key", "deposit_wallet").maybeSingle(),
-      supabaseAdmin.from("app_settings").select("value").eq("key", "profit_adjust").maybeSingle(),
-    ]);
+  const [
+    users,
+    pendingDeposits,
+    pendingWithdrawals,
+    deposits,
+    withdrawals,
+    balances,
+    wallet,
+    walletBep,
+    adjust,
+    announcement,
+  ] = await Promise.all([
+    supabaseAdmin.from("profiles").select("id", { count: "exact", head: true }),
+    supabaseAdmin
+      .from("transactions")
+      .select("id", { count: "exact", head: true })
+      .eq("type", "deposit")
+      .eq("status", "pending"),
+    supabaseAdmin
+      .from("transactions")
+      .select("id", { count: "exact", head: true })
+      .eq("type", "withdrawal")
+      .eq("status", "pending"),
+    supabaseAdmin
+      .from("transactions")
+      .select("amount")
+      .eq("type", "deposit")
+      .eq("status", "approved"),
+    supabaseAdmin
+      .from("transactions")
+      .select("amount")
+      .eq("type", "withdrawal")
+      .eq("status", "approved"),
+    supabaseAdmin.from("profiles").select("balance"),
+    supabaseAdmin.from("app_settings").select("value").eq("key", "deposit_wallet_trc20").maybeSingle(),
+    supabaseAdmin.from("app_settings").select("value").eq("key", "deposit_wallet_bep20").maybeSingle(),
+    supabaseAdmin.from("app_settings").select("value").eq("key", "profit_adjust").maybeSingle(),
+    supabaseAdmin.from("app_settings").select("value").eq("key", "announcement").maybeSingle(),
+  ]);
+  const sum = (rows: Array<{ amount: number }> | null) =>
+    round2((rows ?? []).reduce((s, d) => s + Number(d.amount), 0));
   return {
     users: users.count ?? 0,
     pendingDeposits: pendingDeposits.count ?? 0,
     pendingWithdrawals: pendingWithdrawals.count ?? 0,
-    depositVolume: round2(
-      (deposits.data ?? []).reduce((s, d) => s + Number(d.amount), 0),
+    depositVolume: sum(deposits.data),
+    withdrawVolume: sum(withdrawals.data),
+    totalBalance: round2(
+      (balances.data ?? []).reduce((s, p) => s + Number(p.balance), 0),
     ),
     depositWallet: wallet.data?.value ?? "",
+    depositWalletBep: walletBep.data?.value ?? "",
     profitAdjust: adjust.data?.value ?? "0",
+    announcement: announcement.data?.value ?? "",
   };
 }
 
@@ -89,17 +116,7 @@ export async function adminRequests(userId: string, type: "deposit" | "withdrawa
     .order("created_at", { ascending: false })
     .limit(80);
   if (error) throw new Error(error.message);
-  const rows = await attachUsers(data ?? []);
-  const withProof = await Promise.all(
-    rows.map(async (r) => {
-      if (!r.proof_path) return { ...r, proofUrl: null as string | null };
-      const { data: signed } = await supabaseAdmin.storage
-        .from("deposit-proofs")
-        .createSignedUrl(r.proof_path, 600);
-      return { ...r, proofUrl: signed?.signedUrl ?? null };
-    }),
-  );
-  return withProof;
+  return attachUsers(data ?? []);
 }
 
 export async function adminApproveDeposit(
@@ -126,6 +143,12 @@ export async function adminApproveDeposit(
     .from("transactions")
     .update({ status: "approved", amount, note: "approved" })
     .eq("id", txId);
+  await notify(
+    tx.user_id,
+    "تمت تعبئة رصيدك",
+    `تم تأكيد إيداع بقيمة $${amount} وإضافته إلى رصيدك.`,
+    "deposit",
+  );
 
   // Flat $7 bonus to the direct referrer on the member's first $100+ deposit.
   if (amount >= 100) {
@@ -165,6 +188,12 @@ export async function adminApproveDeposit(
             status: "approved",
             note: `refbonus:${tx.user_id}`,
           });
+          await notify(
+            fresh.id,
+            "مكافأة دعوة صديق 🎉",
+            "حصلت على مكافأة $7 لأن أحد أصدقائك أكمل تعبئة رصيد بقيمة $100 أو أكثر.",
+            "commission",
+          );
         }
       }
     }
@@ -201,18 +230,34 @@ export async function adminApproveDeposit(
       status: "approved",
       note: `level${up.level}:deposit`,
     });
+    await notify(
+      fresh.id,
+      "عمولة إيداع فريق",
+      `تم إضافة عمولة بقيمة $${bonus} من إيداع أحد أعضاء المستوى ${up.level}.`,
+      "commission",
+    );
   }
   return { ok: true };
 }
 
 export async function adminApproveWithdrawal(userId: string, txId: string) {
   await requireAdmin(userId);
-  const { error } = await supabaseAdmin
+  const { data: tx, error } = await supabaseAdmin
     .from("transactions")
     .update({ status: "approved", note: "approved" })
     .eq("id", txId)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("*")
+    .maybeSingle();
   if (error) throw new Error(error.message);
+  if (tx) {
+    await notify(
+      tx.user_id,
+      "تم تنفيذ السحب",
+      `تم تحويل مبلغ $${round2(Number(tx.amount))} إلى محفظتك بنجاح.`,
+      "withdrawal",
+    );
+  }
   return { ok: true };
 }
 
@@ -231,10 +276,17 @@ export async function adminReject(userId: string, txId: string, reason?: string)
       .update({ balance: round2(Number(profile.balance) + Number(tx.amount)) })
       .eq("id", tx.user_id);
   }
+  const note = (reason ?? "").trim() || "rejected";
   await supabaseAdmin
     .from("transactions")
-    .update({ status: "rejected", note: (reason ?? "").trim() || "rejected" })
+    .update({ status: "rejected", note })
     .eq("id", txId);
+  await notify(
+    tx.user_id,
+    tx.type === "withdrawal" ? "تم رفض طلب السحب" : "تم رفض طلب التعبئة",
+    `المبلغ: $${round2(Number(tx.amount))}${note !== "rejected" ? ` · السبب: ${note}` : ""}`,
+    tx.type === "withdrawal" ? "withdrawal" : "deposit",
+  );
   return { ok: true };
 }
 
@@ -246,7 +298,11 @@ export async function adminUsers(userId: string, search: string) {
     .order("created_at", { ascending: false })
     .limit(100);
   const term = search.trim();
-  if (term) query = query.or(`username.ilike.%${term}%,public_id.ilike.%${term}%`);
+  if (term) {
+    query = query.or(
+      `username.ilike.%${term}%,public_id.ilike.%${term}%,email.ilike.%${term}%`,
+    );
+  }
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -269,12 +325,19 @@ export async function adminAdjustBalance(
     status: "approved",
     note: "admin",
   });
+  await notify(
+    targetId,
+    "تعديل رصيد",
+    `تم ${delta >= 0 ? "إضافة" : "خصم"} $${Math.abs(round2(delta))} ${delta >= 0 ? "إلى" : "من"} رصيدك من قبل الإدارة.`,
+    "info",
+  );
   return { ok: true };
 }
 
 export async function adminSetVip(userId: string, targetId: string, level: number) {
   await requireAdmin(userId);
   await supabaseAdmin.from("profiles").update({ vip_level: level }).eq("id", targetId);
+  await notify(targetId, "تحديث مستوى VIP", `تم تعيين حسابك على المستوى VIP${level}.`, "info");
   return { ok: true };
 }
 
