@@ -39,6 +39,14 @@ function requirementLabel(rule: { min_balance: number | string; min_invites?: nu
   return invites > 0 ? base + " · " + invites + " أصدقاء ($100+)" : base;
 }
 
+/** Profit rate range text for a VIP rule. */
+function rateLabel(rule?: { min_rate: number | string; max_rate: number | string }) {
+  if (!rule) return "-";
+  const min = (Number(rule.min_rate) * 100).toFixed(1);
+  const max = (Number(rule.max_rate) * 100).toFixed(1);
+  return min + "% ~ " + max + "%";
+}
+
 /** Milliseconds until the next 11:00 daily reset. */
 function msUntilReset(): number {
   const now = new Date();
@@ -286,9 +294,7 @@ function QuantPage() {
           </div>
           <div className="flex items-center justify-between">
             <dt className="text-muted-foreground">{t("quant.rate")}</dt>
-            <dd className="num font-bold text-gold">
-              0.4% ~ 0.8
-            </dd>
+            <dd className="num font-bold text-gold">{rateLabel(selectedRule)}</dd>
           </div>
           <div className="flex items-center justify-between gap-3">
             <dt className="shrink-0 text-muted-foreground">{t("quant.requirement")}</dt>
@@ -314,7 +320,7 @@ function QuantPage() {
                     {VIP_TITLES[rule.level]}
                   </p>
                   <p className="num mt-0.5 text-[10px] text-muted-foreground">
-                    {"0.4% ~ 0.8%"
+                    {rateLabel(rule)} · {rule.daily_tasks} · {requirementLabel(rule)}
                   </p>
                 </div>
                 <span
