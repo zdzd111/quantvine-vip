@@ -320,7 +320,7 @@ function QuantPage() {
                     {VIP_TITLES[rule.level]}
                   </p>
                   <p className="num mt-0.5 text-[10px] text-muted-foreground">
-                    {"0.4% ~ 0.8%"
+                    {rateLabel(rule)} · {rule.daily_tasks} · {requirementLabel(rule)}
                   </p>
                 </div>
                 <span
