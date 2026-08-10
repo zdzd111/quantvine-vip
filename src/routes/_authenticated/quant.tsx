@@ -39,6 +39,14 @@ function requirementLabel(rule: { min_balance: number | string; min_invites?: nu
   return invites > 0 ? base + " · " + invites + " أصدقاء ($100+)" : base;
 }
 
+/** Profit rate range text for a VIP rule. */
+function rateLabel(rule?: { min_rate: number | string; max_rate: number | string }) {
+  if (!rule) return "-";
+  const min = (Number(rule.min_rate) * 100).toFixed(1);
+  const max = (Number(rule.max_rate) * 100).toFixed(1);
+  return min + "% ~ " + max + "%";
+}
+
 /** Milliseconds until the next 11:00 daily reset. */
 function msUntilReset(): number {
   const now = new Date();
