@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import {
   UserPlus,
   Handshake,
-  ArrowUpFromLine,
-  ArrowDownToLine,
+  Wallet,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
+
 import { buildMarket, formatPrice, formatUsdt, type MarketRow } from "@/lib/market";
 import { useAccount } from "@/lib/use-account";
 import { useI18n } from "@/lib/i18n";
@@ -37,9 +37,9 @@ export const Route = createFileRoute("/_authenticated/home")({
 const ACTIONS = [
   { to: "/team", key: "home.invite", icon: UserPlus },
   { to: "/agency", key: "home.agency", icon: Handshake },
-  { to: "/withdraw", key: "common.withdraw", icon: ArrowUpFromLine },
-  { to: "/deposit", key: "common.deposit", icon: ArrowDownToLine },
+  { to: "/wallet", key: "nav.wallet", icon: Wallet },
 ] as const;
+
 
 function HomePage() {
   const [market, setMarket] = useState<MarketRow[]>(() => buildMarket());
@@ -74,7 +74,7 @@ function HomePage() {
         </p>
       </section>
 
-      <section className="grid grid-cols-4 gap-2">
+      <section className="grid grid-cols-3 gap-2">
         {ACTIONS.map(({ to, key, icon: Icon }) => (
           <Link
             key={to}

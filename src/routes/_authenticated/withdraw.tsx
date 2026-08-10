@@ -1,9 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
+import { ChevronRight } from "lucide-react";
 import { createWithdrawal } from "@/lib/account.functions";
+
 import { useAccount } from "@/lib/use-account";
 import { formatUsdt } from "@/lib/market";
 import { MIN_WITHDRAW, NETWORKS, type NetworkId } from "@/lib/networks";
@@ -82,7 +84,12 @@ function WithdrawPage() {
 
   return (
     <div className="space-y-5 px-4 pt-5">
+      <Link to="/wallet" className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground">
+        <ChevronRight className="h-4 w-4" />
+        {t("nav.wallet")}
+      </Link>
       <h1 className="text-lg font-extrabold">{t("withdraw.title")}</h1>
+
 
       <section className="panel gold-surface p-4">
         <p className="text-xs font-semibold opacity-80">{t("common.usdt")}</p>

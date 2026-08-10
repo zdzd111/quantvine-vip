@@ -1,9 +1,10 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Copy } from "lucide-react";
+import { Copy, ChevronRight } from "lucide-react";
+
 import { createDeposit } from "@/lib/account.functions";
 import { NETWORKS, DEPOSIT_PRESETS, type NetworkId } from "@/lib/networks";
 import { useI18n } from "@/lib/i18n";
@@ -68,7 +69,12 @@ function DepositPage() {
 
   return (
     <div className="space-y-5 px-4 pt-5">
+      <Link to="/wallet" className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground">
+        <ChevronRight className="h-4 w-4" />
+        {t("nav.wallet")}
+      </Link>
       <h1 className="text-lg font-extrabold">{t("deposit.title")}</h1>
+
 
       <section className="panel space-y-3 p-4">
         <p className="text-xs font-semibold text-muted-foreground">{t("common.network")}</p>
