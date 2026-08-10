@@ -156,7 +156,8 @@ function QuantPage() {
         toast.error(t("quant.low_balance"));
       } else {
         playSuccess();
-        setWin({ profit: profitPerClick, rate: result.rate });
+        setLastProfit(result.profit);
+        setWin({ profit: result.profit, rate: result.rate });
       }
       await queryClient.invalidateQueries({ queryKey: ["account"] });
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
