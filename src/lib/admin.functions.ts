@@ -87,7 +87,7 @@ export const setUserVip = createServerFn({ method: "POST" })
 export const setSetting = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { key: string; value: string }) =>
-    z.object({ key: z.enum(["deposit_wallet", "deposit_wallet_trc20", "deposit_wallet_bep20", "profit_adjust"]), value: z.string().max(120) }).parse(input),
+    z.object({ key: z.enum(["deposit_wallet", "deposit_wallet_trc20", "deposit_wallet_bep20", "profit_adjust", "announcement"]), value: z.string().max(400) }).parse(input),
   )
   .handler(async ({ data, context }) => {
     const { adminSetSetting } = await import("./admin.server");
