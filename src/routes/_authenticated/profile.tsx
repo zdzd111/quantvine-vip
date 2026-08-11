@@ -13,9 +13,13 @@ import {
   Info,
   KeyRound,
   LogOut,
+  Mail,
+  MonitorSmartphone,
+  ReceiptText,
   ShieldCheck,
   Users,
 } from "lucide-react";
+
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAccount } from "@/lib/use-account";
