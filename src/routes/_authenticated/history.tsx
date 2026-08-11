@@ -93,9 +93,8 @@ function HistoryPage() {
                 })}
               </ul>
             )}
-          </section>
-        );
-      })}
+      </section>
+
 
       <section className="panel overflow-hidden">
         <h2 className="border-b border-border px-4 py-3 text-sm font-bold">الأرباح والعمولات</h2>
