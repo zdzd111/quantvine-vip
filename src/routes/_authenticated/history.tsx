@@ -37,15 +37,10 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: "مرفوض",
 };
 
-const FILTERS = [
-  { id: "all", label: "الكل" },
-  { id: "deposit", label: "الإيداعات" },
-  { id: "withdrawal", label: "السحوبات" },
-] as const;
-
 function HistoryPage() {
   const load = useServerFn(fetchTransactions);
   const { data } = useQuery({ queryKey: ["transactions"], queryFn: () => load() });
+  const rows = (data ?? []).filter((tx) => tx.type === "deposit" || tx.type === "withdrawal");
 
   return (
     <div className="space-y-5 px-4 pt-5">
@@ -58,13 +53,9 @@ function HistoryPage() {
         سجل المعاملات
       </h1>
 
-      {FILTERS.map((filter) => {
-        const rows = (data ?? []).filter((tx) =>
-          filter.id === "all" ? tx.type === "deposit" || tx.type === "withdrawal" : tx.type === filter.id,
-        );
-        if (filter.id !== "all") return null;
-        return (
-          <section key={filter.id} className="panel overflow-hidden">
+      <section className="panel overflow-hidden">
+        <h2 className="border-b border-border px-4 py-3 text-sm font-bold">الإيداعات والسحوبات</h2>
+
             {!rows.length ? (
               <p className="px-4 py-10 text-center text-sm text-muted-foreground">
                 لا توجد عمليات إيداع أو سحب بعد
