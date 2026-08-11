@@ -258,3 +258,93 @@ function ChangePassword() {
     </section>
   );
 }
+
+function SecurityActivity({
+  email,
+  lastLoginAt,
+  lastLoginAgent,
+}: {
+  email: string | null;
+  lastLoginAt: string | null;
+  lastLoginAgent: string | null;
+}) {
+  return (
+    <section className="panel space-y-1.5 p-4">
+      <p className="flex items-center gap-2 text-sm font-bold">
+        <MonitorSmartphone className="h-4 w-4 text-gold" />
+        سجل نشاط الأمان
+      </p>
+      <p className="num break-all text-[11px] text-muted-foreground">
+        البريد الإلكتروني: {email ?? "غير محدد"}
+      </p>
+      <p className="num text-[11px] text-muted-foreground">
+        آخر دخول: {lastLoginAt ? new Date(lastLoginAt).toLocaleString("en-GB") : "لا يوجد سجل بعد"}
+      </p>
+      <p className="break-all text-[11px] text-muted-foreground">
+        الجهاز / المتصفح: {lastLoginAgent ?? "غير معروف"}
+      </p>
+      <Link to="/security" className="inline-block pt-1 text-[11px] font-black text-gold">
+        الانتقال إلى مركز الأمان ←
+      </Link>
+    </section>
+  );
+}
+
+function ChangeEmail({ currentEmail }: { currentEmail: string | null }) {
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function save() {
+    const value = email.trim();
+    if (!value.includes("@") || value.length < 6) {
+      toast.error("يُرجى إدخال بريد إلكتروني صحيح");
+      return;
+    }
+    if (value === currentEmail) {
+      toast.error("هذا هو بريدك الحالي");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.updateUser(
+        { email: value },
+        { emailRedirectTo: window.location.origin },
+      );
+      if (error) throw error;
+      toast.success("تم إرسال رسالة تحقق إلى بريدك الجديد لتأكيد التغيير");
+      setEmail("");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "تعذر تحديث البريد الإلكتروني");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="panel space-y-2 p-4">
+      <p className="flex items-center gap-2 text-sm font-bold">
+        <Mail className="h-4 w-4 text-gold" />
+        تغيير البريد الإلكتروني
+      </p>
+      <p className="num text-[11px] text-muted-foreground">الحالي: {currentEmail ?? "غير محدد"}</p>
+      <input
+        type="email"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        placeholder="البريد الإلكتروني الجديد"
+        className="num w-full rounded-xl border border-border bg-elevated px-3 py-3 text-sm outline-none focus:border-gold"
+      />
+      <button
+        type="button"
+        disabled={busy}
+        onClick={save}
+        className="gold-surface w-full rounded-xl py-2.5 text-sm font-black disabled:opacity-50"
+      >
+        {busy ? "جارٍ الإرسال..." : "إرسال رمز التحقق"}
+      </button>
+      <p className="text-[10px] leading-relaxed text-muted-foreground">
+        سيتم إرسال رابط/رمز تحقق إلى البريد الجديد، ولن يتم التغيير قبل تأكيده.
+      </p>
+    </section>
+  );
+}
