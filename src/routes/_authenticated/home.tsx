@@ -65,6 +65,9 @@ function HomePage() {
 
       <LiveUsersBadge />
 
+      <MarqueeBanner />
+
+
       <section className="panel gold-surface overflow-hidden p-4">
         <p className="text-xs font-semibold opacity-80">{t("common.usdt")}</p>
         <p className="num mt-1 text-3xl font-black">${formatUsdt(data?.profile.balance ?? 0)}</p>
