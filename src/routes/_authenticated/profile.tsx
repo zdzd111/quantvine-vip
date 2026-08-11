@@ -105,6 +105,22 @@ function ProfilePage() {
       </section>
 
       <section className="panel overflow-hidden">
+        <Link
+          to="/history"
+          className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3.5 text-sm"
+        >
+          <ReceiptText className="h-4 w-4 shrink-0 text-gold" />
+          <span className="truncate font-semibold">سجل المعاملات</span>
+          <ChevronLeft className="h-4 w-4 shrink-0 text-muted-foreground" />
+        </Link>
+        <Link
+          to="/security"
+          className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3.5 text-sm"
+        >
+          <ShieldCheck className="h-4 w-4 shrink-0 text-gold" />
+          <span className="truncate font-semibold">مركز الأمان</span>
+          <ChevronLeft className="h-4 w-4 shrink-0 text-muted-foreground" />
+        </Link>
         {LINKS.map(({ label, icon: Icon, to }) => (
           <Link
             key={label}
@@ -128,9 +144,18 @@ function ProfilePage() {
         )}
       </section>
 
+      <SecurityActivity
+        email={profile?.email ?? null}
+        lastLoginAt={profile?.last_login_at ?? null}
+        lastLoginAgent={profile?.last_login_agent ?? null}
+      />
+
+      <ChangeEmail currentEmail={profile?.email ?? null} />
+
       <ChangePassword />
 
       <LanguageSwitcher />
+
 
       <SecurityBadges />
 
