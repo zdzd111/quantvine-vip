@@ -209,10 +209,11 @@ function WithdrawPage() {
 
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || hasPending}
           onClick={handleSubmit}
           className="gold-surface w-full rounded-xl py-3 text-sm font-black disabled:opacity-50"
         >
+
           {busy ? t("common.sending") : t("withdraw.submit")}
         </button>
       </section>
