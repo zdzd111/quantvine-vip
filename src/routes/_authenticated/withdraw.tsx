@@ -170,7 +170,42 @@ function WithdrawPage() {
           {t("withdraw.all")}
         </button>
 
+        {hasPin ? (
+          <>
+            <label className="block text-sm font-bold" htmlFor="wpin">
+              كلمة مرور السحب
+            </label>
+            <input
+              id="wpin"
+              type="password"
+              inputMode="numeric"
+              value={pin}
+              maxLength={6}
+              onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}
+              placeholder="••••"
+              className="num w-full rounded-xl border border-border bg-elevated px-3 py-3 text-sm outline-none focus:border-gold"
+            />
+          </>
+        ) : (
+          <Link
+            to="/security"
+            className="block rounded-xl border border-gold/40 bg-elevated px-3 py-2.5 text-[11px] font-bold leading-relaxed text-gold"
+          >
+            🔒 لحماية أموالك، أنشئ كلمة مرور السحب من مركز الأمان
+          </Link>
+        )}
+
+        {hasPending && (
+          <p className="rounded-xl bg-destructive/10 px-3 py-2 text-[11px] font-semibold leading-relaxed text-destructive">
+            لديك طلب سحب قيد المراجعة. لا يمكن تقديم طلب جديد قبل معالجته.
+          </p>
+        )}
+
         <p className="text-[11px] leading-relaxed text-muted-foreground">{t("withdraw.min")}</p>
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          تتم معالجة وتحويل الأموال خلال 24 إلى 48 ساعة بعد المراجعة.
+        </p>
+
 
         <button
           type="button"
