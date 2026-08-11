@@ -55,7 +55,9 @@ function SecurityPage() {
     }
     setBusy(true);
     try {
-      const result = await save({ data: { pin, currentPin: currentPin || undefined } });
+      const result = await save({
+        data: currentPin ? { pin, currentPin } : { pin },
+      });
       if (!result.ok) {
         toast.error(result.reason === "wrong_pin" ? "رمز الأمان الحالي غير صحيح" : "صيغة الرمز غير صالحة");
         return;
