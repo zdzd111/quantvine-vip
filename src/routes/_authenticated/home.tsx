@@ -12,6 +12,7 @@ import { buildMarket, formatPrice, formatUsdt, type MarketRow } from "@/lib/mark
 import { useAccount } from "@/lib/use-account";
 import { useI18n } from "@/lib/i18n";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
+import { MarqueeBanner } from "@/components/MarqueeBanner";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SecurityBadges } from "@/components/SecurityBadges";
 
@@ -64,6 +65,9 @@ function HomePage() {
       </header>
 
       <LiveUsersBadge />
+
+      <MarqueeBanner />
+
 
       <section className="panel gold-surface overflow-hidden p-4">
         <p className="text-xs font-semibold opacity-80">{t("common.usdt")}</p>

@@ -37,14 +37,21 @@ function WithdrawPage() {
   const [network, setNetwork] = useState<NetworkId>("trc20");
   const [wallet, setWallet] = useState("");
   const [amount, setAmount] = useState("");
+  const [pin, setPin] = useState("");
   const [busy, setBusy] = useState(false);
 
   const balance = Number(data?.profile.balance ?? 0);
   const active = NETWORKS.find((n) => n.id === network)!;
+  const hasPin = Boolean(data?.hasWithdrawPin);
+  const hasPending = (data?.pendingWithdrawals ?? 0) > 0;
 
   async function handleSubmit() {
     const value = Number(amount);
     const address = wallet.trim();
+    if (hasPending) {
+      toast.error("لديك طلب سحب قيد المراجعة، يُرجى انتظار معالجته قبل تقديم طلب جديد");
+      return;
+    }
     if (!active.validate(address)) {
       toast.error(t("withdraw.bad_address"));
       return;
@@ -57,30 +64,45 @@ function WithdrawPage() {
       toast.error(t("withdraw.insufficient"));
       return;
     }
+    if (hasPin && !/^\d{4,6}$/.test(pin)) {
+      toast.error("يُرجى إدخال كلمة مرور السحب (4-6 أرقام)");
+      return;
+    }
     setBusy(true);
     try {
-      const result = await submit({ data: { amount: value, wallet: address, network } });
+      const result = await submit({
+        data: hasPin
+          ? { amount: value, wallet: address, network, pin }
+          : { amount: value, wallet: address, network },
+      });
       if (result && "ok" in result && result.ok === false) {
+        const reason = result.reason;
         toast.error(
-          result.reason === "min" ? t("withdraw.min_error") : t("withdraw.insufficient"),
+          reason === "min"
+            ? t("withdraw.min_error")
+            : reason === "pin"
+              ? "كلمة مرور السحب غير صحيحة"
+              : reason === "pending"
+                ? "لديك طلب سحب قيد المراجعة، يُرجى انتظار معالجته"
+                : reason === "wallet"
+                  ? t("withdraw.bad_address")
+                  : t("withdraw.insufficient"),
         );
-        return;
-      }
-      if (result && "status" in result && result.status === "insufficient") {
-        toast.error(t("withdraw.insufficient"));
         return;
       }
       await queryClient.invalidateQueries({ queryKey: ["account"] });
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      await queryClient.invalidateQueries({ queryKey: ["notifications"] });
       playSuccess();
-      toast.success(t("withdraw.sent"));
-      navigate({ to: "/wallet" });
+      toast.success("تم استلام طلب السحب بنجاح، سيتم معالجة وتحويل الأموال خلال 24 إلى 48 ساعة قادمة");
+      navigate({ to: "/history" });
     } catch {
       toast.error(t("withdraw.insufficient"));
     } finally {
       setBusy(false);
     }
   }
+
 
   return (
     <div className="space-y-5 px-4 pt-5">
@@ -148,14 +170,50 @@ function WithdrawPage() {
           {t("withdraw.all")}
         </button>
 
+        {hasPin ? (
+          <>
+            <label className="block text-sm font-bold" htmlFor="wpin">
+              كلمة مرور السحب
+            </label>
+            <input
+              id="wpin"
+              type="password"
+              inputMode="numeric"
+              value={pin}
+              maxLength={6}
+              onChange={(event) => setPin(event.target.value.replace(/\D/g, ""))}
+              placeholder="••••"
+              className="num w-full rounded-xl border border-border bg-elevated px-3 py-3 text-sm outline-none focus:border-gold"
+            />
+          </>
+        ) : (
+          <Link
+            to="/security"
+            className="block rounded-xl border border-gold/40 bg-elevated px-3 py-2.5 text-[11px] font-bold leading-relaxed text-gold"
+          >
+            🔒 لحماية أموالك، أنشئ كلمة مرور السحب من مركز الأمان
+          </Link>
+        )}
+
+        {hasPending && (
+          <p className="rounded-xl bg-destructive/10 px-3 py-2 text-[11px] font-semibold leading-relaxed text-destructive">
+            لديك طلب سحب قيد المراجعة. لا يمكن تقديم طلب جديد قبل معالجته.
+          </p>
+        )}
+
         <p className="text-[11px] leading-relaxed text-muted-foreground">{t("withdraw.min")}</p>
+        <p className="text-[11px] leading-relaxed text-muted-foreground">
+          تتم معالجة وتحويل الأموال خلال 24 إلى 48 ساعة بعد المراجعة.
+        </p>
+
 
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || hasPending}
           onClick={handleSubmit}
           className="gold-surface w-full rounded-xl py-3 text-sm font-black disabled:opacity-50"
         >
+
           {busy ? t("common.sending") : t("withdraw.submit")}
         </button>
       </section>

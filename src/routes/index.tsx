@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -154,7 +154,17 @@ function AuthPage() {
         >
           {busy ? "جارٍ المعالجة..." : mode === "login" ? "تسجيل الدخول" : "إنشاء حساب"}
         </button>
+
+        {mode === "login" && (
+          <Link
+            to="/forgot-password"
+            className="block pt-1 text-center text-xs font-bold text-gold"
+          >
+            نسيت كلمة المرور؟
+          </Link>
+        )}
       </div>
+
 
       <SecurityBadges />
 
