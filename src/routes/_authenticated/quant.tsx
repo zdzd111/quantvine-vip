@@ -91,7 +91,6 @@ function QuantPage() {
 
   const profile = data?.profile;
   const levels = data?.levels ?? [];
-  const activeInvites = data?.activeInvites ?? 0;
   const balance = Number(profile?.balance ?? 0);
 
   const currentRule = useMemo(
