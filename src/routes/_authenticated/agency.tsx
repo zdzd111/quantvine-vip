@@ -14,9 +14,9 @@ export const Route = createFileRoute("/_authenticated/agency")({
 });
 
 const TIERS = [
-  { level: "Level1 المرؤوس", quant: "10%", deposit: "5%" },
-  { level: "Level2 المرؤوس", quant: "5%", deposit: "3%" },
-  { level: "Level3 المرؤوس", quant: "2%", deposit: "1%" },
+  { level: "Level1 المرؤوس", quant: "21%", deposit: "5%" },
+  { level: "Level2 المرؤوس", quant: "7%", deposit: "3%" },
+  { level: "Level3 المرؤوس", quant: "3%", deposit: "1%" },
 ];
 
 function AgencyPage() {

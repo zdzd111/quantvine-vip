@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Loader2, Lock, Timer, Users, Zap } from "lucide-react";
+import { Loader2, Lock, Timer, Zap } from "lucide-react";
 import { startQuant } from "@/lib/account.functions";
 import { useAccount } from "@/lib/use-account";
 import { buildFeed, formatUsdt, type FeedRow } from "@/lib/market";
@@ -91,7 +91,6 @@ function QuantPage() {
 
   const profile = data?.profile;
   const levels = data?.levels ?? [];
-  const activeInvites = data?.activeInvites ?? 0;
   const balance = Number(profile?.balance ?? 0);
 
   const currentRule = useMemo(
@@ -107,25 +106,6 @@ function QuantPage() {
   const used = profile?.quant_count ?? 0;
   const exhausted = used >= dailyTasks;
   const lowBalance = balance < MIN_QUANT_BALANCE;
-
-  const nudge = useMemo(() => {
-    const vip2 = levels.find((l) => l.level === 2);
-    const vip3 = levels.find((l) => l.level === 3);
-    const level = profile?.vip_level ?? 1;
-    if (level < 2 && vip2) {
-      const need = Math.max(0, Number(vip2.min_invites ?? 3) - activeInvites);
-      if (need > 0) return `⚡ بقي لك ${need} صديق يشحن $100 لتفتح مستوى VIP2`;
-      const money = Math.max(0, Number(vip2.min_balance) - balance);
-      if (money > 0) return `⚡ بقي لك $${formatUsdt(money)} في رصيدك لتفتح مستوى VIP2`;
-    }
-    if (level < 3 && vip3) {
-      const need = Math.max(0, Number(vip3.min_invites ?? 6) - activeInvites);
-      if (need > 0) return `⚡ بقي لك ${need} صديق يشحن $100 لتفتح مستوى VIP3`;
-      const money = Math.max(0, Number(vip3.min_balance) - balance);
-      if (money > 0) return `⚡ بقي لك $${formatUsdt(money)} في رصيدك لتفتح مستوى VIP3`;
-    }
-    return null;
-  }, [levels, profile?.vip_level, activeInvites, balance]);
 
   async function handleRun() {
     if (running || exhausted) return;
@@ -254,13 +234,8 @@ function QuantPage() {
         )}
       </section>
 
-      <p className="panel p-4 text-xs font-bold leading-relaxed text-gold">{t("quant.team_card")}</p>
 
-      {nudge && (
-        <p className="rounded-xl border border-gold/40 bg-gold/10 p-3 text-xs font-bold leading-relaxed">
-          {nudge}
-        </p>
-      )}
+
 
       <section className="panel p-4">
         <div className="mb-3 flex items-center justify-between">

@@ -56,6 +56,8 @@ function DepositPage() {
     setBusy(true);
     try {
       await submit({ data: { amount: value, network } });
+      // Kick off automatic on-chain matching for this request.
+      void fetch("/api/public/hooks/verify-deposits", { method: "POST" }).catch(() => {});
       await queryClient.invalidateQueries({ queryKey: ["transactions"] });
       playSuccess();
       toast.success(t("deposit.sent"));

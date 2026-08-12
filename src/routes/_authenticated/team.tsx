@@ -26,7 +26,7 @@ const LEVEL_LABEL: Record<number, string> = {
   3: "Level3 المرؤوس",
 };
 
-const LEVEL_RATE: Record<number, string> = { 1: "10%", 2: "5%", 3: "2%" };
+const LEVEL_RATE: Record<number, string> = { 1: "21%", 2: "7%", 3: "3%" };
 
 function TeamPage() {
   const load = useServerFn(fetchTeam);
@@ -72,42 +72,6 @@ function TeamPage() {
             مشاركة الرابط 🔗
           </button>
         </div>
-      </section>
-
-      <section className="panel space-y-2 p-4">
-        <p className="text-xs font-black">ادعُ 3 أصدقاء ($100+) واحتفظ بـ $200 لفتح VIP2</p>
-        {[
-          {
-            label: "الأصدقاء النشطون",
-            value: data?.activeInvites ?? 0,
-            target: 3,
-            suffix: "صديق",
-          },
-          {
-            label: "الرصيد الشخصي",
-            value: Number(data?.balance ?? 0),
-            target: 200,
-            suffix: "$",
-          },
-        ].map((row) => {
-          const pct = Math.min(100, Math.round((row.value / row.target) * 100));
-          return (
-            <div key={row.label} className="space-y-1">
-              <div className="flex items-center justify-between text-[11px] font-bold">
-                <span>{row.label}</span>
-                <span className="num text-gold">
-                  {formatUsdt(row.value)} / {row.target} {row.suffix}
-                </span>
-              </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-elevated">
-                <div className="h-full rounded-full bg-gold transition-all" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
-          );
-        })}
-        {(data?.activeInvites ?? 0) === 2 && (
-          <p className="text-[11px] font-black text-gold">⚡ بقي لك صديق واحد فقط لفتح VIP2!</p>
-        )}
       </section>
 
 

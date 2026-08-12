@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-export const COMMISSION_QUANT = { 1: 0.1, 2: 0.05, 3: 0.02 } as const;
+export const COMMISSION_QUANT = { 1: 0.21, 2: 0.07, 3: 0.03 } as const;
 export const COMMISSION_DEPOSIT = { 1: 0.05, 2: 0.03, 3: 0.01 } as const;
 
 /** Daily tasks reset at 11:00 local server time. */
