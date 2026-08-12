@@ -125,6 +125,15 @@ export async function adminApproveDeposit(
   actualAmount: number,
 ) {
   await requireAdmin(userId);
+  return settleDeposit(txId, actualAmount);
+}
+
+/** Credits an approved deposit, pays the $7 referral bonus and upline commissions. */
+export async function settleDeposit(
+  txId: string,
+  actualAmount: number,
+  note = "approved",
+) {
   const { data: tx } = await supabaseAdmin
     .from("transactions")
     .select("*")
@@ -141,7 +150,7 @@ export async function adminApproveDeposit(
     .eq("id", tx.user_id);
   await supabaseAdmin
     .from("transactions")
-    .update({ status: "approved", amount, note: "approved" })
+    .update({ status: "approved", amount, note })
     .eq("id", txId);
   await notify(
     tx.user_id,
