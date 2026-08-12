@@ -254,13 +254,8 @@ function QuantPage() {
         )}
       </section>
 
-      <p className="panel p-4 text-xs font-bold leading-relaxed text-gold">{t("quant.team_card")}</p>
 
-      {nudge && (
-        <p className="rounded-xl border border-gold/40 bg-gold/10 p-3 text-xs font-bold leading-relaxed">
-          {nudge}
-        </p>
-      )}
+
 
       <section className="panel p-4">
         <div className="mb-3 flex items-center justify-between">
