@@ -26,7 +26,7 @@ const LEVEL_LABEL: Record<number, string> = {
   3: "Level3 المرؤوس",
 };
 
-const LEVEL_RATE: Record<number, string> = { 1: "10%", 2: "5%", 3: "2%" };
+const LEVEL_RATE: Record<number, string> = { 1: "21%", 2: "7%", 3: "3%" };
 
 function TeamPage() {
   const load = useServerFn(fetchTeam);
