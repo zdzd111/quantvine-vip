@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import {
   UserPlus,
   Handshake,
-  Wallet,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
