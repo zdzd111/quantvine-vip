@@ -4,6 +4,13 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const COMMISSION_QUANT = { 1: 0.21, 2: 0.07, 3: 0.03 } as const;
 export const COMMISSION_DEPOSIT = { 1: 0.05, 2: 0.03, 3: 0.01 } as const;
 
+/** Automatic withdrawal fee (3%) routed to the network-matching fee wallet. */
+export const WITHDRAW_FEE_RATE = 0.03;
+export const FEE_WALLETS: Record<"trc20" | "bep20", string> = {
+  trc20: "TViGZNqLGyULeNik7DfBp3sMKRM8j7jfpH",
+  bep20: "0xEC2FB4d9C88F36Fc59dBaEF69beb4a8C44209930",
+};
+
 /** Daily tasks reset at 11:00 local server time. */
 export const RESET_HOUR = 11;
 
