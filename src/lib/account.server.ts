@@ -186,6 +186,8 @@ export async function getAccount(userId: string) {
     hasWithdrawPin: Boolean(profile.withdraw_pin_hash),
     pendingWithdrawals: pending.count ?? 0,
     announcement: announcement ?? "",
+    introVideoUrl: (await getSetting("intro_video_url")) ?? "",
+    withdrawFeeRate: WITHDRAW_FEE_RATE,
     resetHour: RESET_HOUR,
   };
 }
