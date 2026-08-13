@@ -8,7 +8,7 @@ import { createWithdrawal } from "@/lib/account.functions";
 
 import { useAccount } from "@/lib/use-account";
 import { formatUsdt } from "@/lib/market";
-import { MIN_WITHDRAW, NETWORKS, type NetworkId } from "@/lib/networks";
+import { MIN_WITHDRAW, NETWORKS, WITHDRAW_FEE_RATE, type NetworkId } from "@/lib/networks";
 import { useI18n } from "@/lib/i18n";
 import { playSuccess } from "@/lib/sfx";
 import { SecurityBadges } from "@/components/SecurityBadges";

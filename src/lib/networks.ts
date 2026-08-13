@@ -28,3 +28,4 @@ export const getNetwork = (id: NetworkId) => NETWORKS.find((n) => n.id === id) ?
 export const DEPOSIT_PRESETS = [35, 100, 300, 500, 1000, 3000];
 export const MIN_QUANT_BALANCE = 35;
 export const MIN_WITHDRAW = 10;
+export const WITHDRAW_FEE_RATE = 0.03;
