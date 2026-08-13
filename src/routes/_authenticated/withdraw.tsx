@@ -44,6 +44,9 @@ function WithdrawPage() {
   const active = NETWORKS.find((n) => n.id === network)!;
   const hasPin = Boolean(data?.hasWithdrawPin);
   const hasPending = (data?.pendingWithdrawals ?? 0) > 0;
+  const requested = Number(amount) > 0 ? Number(amount) : 0;
+  const fee = Math.round(requested * WITHDRAW_FEE_RATE * 100) / 100;
+  const net = Math.round((requested - fee) * 100) / 100;
 
   async function handleSubmit() {
     const value = Number(amount);
