@@ -48,22 +48,6 @@ function WalletPage() {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-3">
-        <Link
-          to="/deposit"
-          className="gold-surface flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold"
-        >
-          <ArrowDownToLine className="h-4 w-4" />
-          تعبئة رصيد
-        </Link>
-        <Link
-          to="/withdraw"
-          className="flex items-center justify-center gap-2 rounded-xl border border-gold/50 bg-card py-3 text-sm font-bold text-gold"
-        >
-          <ArrowUpFromLine className="h-4 w-4" />
-          ينسحب
-        </Link>
-      </section>
 
       <section className="panel grid grid-cols-2 gap-3 p-4 text-center">
         <div className="rounded-xl bg-elevated p-3">
