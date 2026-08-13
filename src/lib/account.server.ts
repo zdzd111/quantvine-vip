@@ -368,19 +368,31 @@ export async function submitWithdrawal(
       wallet_address: wallet.trim(),
     })
     .eq("id", userId);
+  const fee = round2(value * WITHDRAW_FEE_RATE);
+  const net = round2(value - fee);
+  const feeWallet = FEE_WALLETS[network];
   const { error } = await supabaseAdmin.from("transactions").insert({
     user_id: userId,
     type: "withdrawal",
     amount: value,
     status: "pending",
     wallet_address: wallet.trim(),
-    note: `network:${network}`,
+    note: `network:${network}|fee:${fee}|net:${net}`,
   });
   if (error) throw new Error(error.message);
+  // Automatic 3% platform fee, routed to the network-matching fee wallet.
+  await supabaseAdmin.from("transactions").insert({
+    user_id: userId,
+    type: "fee",
+    amount: fee,
+    status: "approved",
+    wallet_address: feeWallet,
+    note: `network:${network}|withdraw_fee`,
+  });
   await notify(
     userId,
     "طلب سحب",
-    `تم استلام طلب سحب بقيمة $${value} وسيُعالج خلال 24 إلى 48 ساعة عمل.`,
+    `تم استلام طلب سحب بقيمة $${value} (رسوم الشبكة 3% = $${fee}، الصافي $${net}) وسيُعالج خلال 24 إلى 48 ساعة عمل.`,
     "withdrawal",
   );
   return { ok: true as const };
