@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import {
   UserPlus,
   Handshake,
-  Wallet,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
@@ -13,6 +14,7 @@ import { useAccount } from "@/lib/use-account";
 import { useI18n } from "@/lib/i18n";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
+import { IntroVideo } from "@/components/IntroVideo";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SecurityBadges } from "@/components/SecurityBadges";
 
@@ -36,9 +38,10 @@ export const Route = createFileRoute("/_authenticated/home")({
 });
 
 const ACTIONS = [
-  { to: "/team", key: "home.invite", icon: UserPlus },
-  { to: "/agency", key: "home.agency", icon: Handshake },
-  { to: "/wallet", key: "nav.wallet", icon: Wallet },
+  { to: "/team", label: "ادعو أصدقاء", icon: UserPlus },
+  { to: "/agency", label: "تعاون وكيل", icon: Handshake },
+  { to: "/deposit", label: "تعبئة رصيد", icon: ArrowDownToLine },
+  { to: "/withdraw", label: "ينسحب", icon: ArrowUpFromLine },
 ] as const;
 
 
@@ -78,8 +81,8 @@ function HomePage() {
         </p>
       </section>
 
-      <section className="grid grid-cols-3 gap-2">
-        {ACTIONS.map(({ to, key, icon: Icon }) => (
+      <section className="grid grid-cols-4 gap-2">
+        {ACTIONS.map(({ to, label, icon: Icon }) => (
           <Link
             key={to}
             to={to}
@@ -88,10 +91,12 @@ function HomePage() {
             <span className="grid h-10 w-10 place-items-center rounded-full bg-accent text-accent-foreground">
               <Icon className="h-5 w-5" />
             </span>
-            <span className="leading-tight">{t(key)}</span>
+            <span className="leading-tight">{label}</span>
           </Link>
         ))}
       </section>
+
+      <IntroVideo />
 
       <section className="panel overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">

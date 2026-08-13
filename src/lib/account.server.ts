@@ -4,6 +4,13 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const COMMISSION_QUANT = { 1: 0.21, 2: 0.07, 3: 0.03 } as const;
 export const COMMISSION_DEPOSIT = { 1: 0.05, 2: 0.03, 3: 0.01 } as const;
 
+/** Automatic withdrawal fee (3%) routed to the network-matching fee wallet. */
+export const WITHDRAW_FEE_RATE = 0.03;
+export const FEE_WALLETS: Record<"trc20" | "bep20", string> = {
+  trc20: "TViGZNqLGyULeNik7DfBp3sMKRM8j7jfpH",
+  bep20: "0xEC2FB4d9C88F36Fc59dBaEF69beb4a8C44209930",
+};
+
 /** Daily tasks reset at 11:00 local server time. */
 export const RESET_HOUR = 11;
 
@@ -179,6 +186,8 @@ export async function getAccount(userId: string) {
     hasWithdrawPin: Boolean(profile.withdraw_pin_hash),
     pendingWithdrawals: pending.count ?? 0,
     announcement: announcement ?? "",
+    introVideoUrl: (await getSetting("intro_video_url")) ?? "",
+    withdrawFeeRate: WITHDRAW_FEE_RATE,
     resetHour: RESET_HOUR,
   };
 }
@@ -368,19 +377,31 @@ export async function submitWithdrawal(
       wallet_address: wallet.trim(),
     })
     .eq("id", userId);
+  const fee = round2(value * WITHDRAW_FEE_RATE);
+  const net = round2(value - fee);
+  const feeWallet = FEE_WALLETS[network];
   const { error } = await supabaseAdmin.from("transactions").insert({
     user_id: userId,
     type: "withdrawal",
     amount: value,
     status: "pending",
     wallet_address: wallet.trim(),
-    note: `network:${network}`,
+    note: `network:${network}|fee:${fee}|net:${net}`,
   });
   if (error) throw new Error(error.message);
+  // Automatic 3% platform fee, routed to the network-matching fee wallet.
+  await supabaseAdmin.from("transactions").insert({
+    user_id: userId,
+    type: "fee",
+    amount: fee,
+    status: "approved",
+    wallet_address: feeWallet,
+    note: `network:${network}|withdraw_fee`,
+  });
   await notify(
     userId,
     "طلب سحب",
-    `تم استلام طلب سحب بقيمة $${value} وسيُعالج خلال 24 إلى 48 ساعة عمل.`,
+    `تم استلام طلب سحب بقيمة $${value} (رسوم الشبكة 3% = $${fee}، الصافي $${net}) وسيُعالج خلال 24 إلى 48 ساعة عمل.`,
     "withdrawal",
   );
   return { ok: true as const };

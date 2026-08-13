@@ -144,22 +144,18 @@ function TeamPage() {
                   عمولة {LEVEL_RATE[row.level]}
                 </span>
               </header>
-              <dl className="grid grid-cols-2 gap-3 text-sm">
+              <dl className="grid grid-cols-3 gap-3 text-sm">
                 <div>
                   <dt className="text-[11px] text-muted-foreground">عدد الأعضاء</dt>
                   <dd className="num font-bold">{row.members}</dd>
                 </div>
                 <div>
-                  <dt className="text-[11px] text-muted-foreground">أعضاء نشطون</dt>
-                  <dd className="num font-bold">{row.active}</dd>
-                </div>
-                <div>
                   <dt className="text-[11px] text-muted-foreground">إيداعات الفريق</dt>
-                  <dd className="num font-bold">{formatUsdt(row.deposits)} USDT</dd>
+                  <dd className="num font-bold">{formatUsdt(row.deposits)}</dd>
                 </div>
                 <div>
                   <dt className="text-[11px] text-muted-foreground">عمولتي</dt>
-                  <dd className="num font-bold text-gold">{formatUsdt(row.commission)} USDT</dd>
+                  <dd className="num font-bold text-gold">{formatUsdt(row.commission)}</dd>
                 </div>
               </dl>
             </article>

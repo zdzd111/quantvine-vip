@@ -8,7 +8,7 @@ import { createWithdrawal } from "@/lib/account.functions";
 
 import { useAccount } from "@/lib/use-account";
 import { formatUsdt } from "@/lib/market";
-import { MIN_WITHDRAW, NETWORKS, type NetworkId } from "@/lib/networks";
+import { MIN_WITHDRAW, NETWORKS, WITHDRAW_FEE_RATE, type NetworkId } from "@/lib/networks";
 import { useI18n } from "@/lib/i18n";
 import { playSuccess } from "@/lib/sfx";
 import { SecurityBadges } from "@/components/SecurityBadges";
@@ -44,6 +44,9 @@ function WithdrawPage() {
   const active = NETWORKS.find((n) => n.id === network)!;
   const hasPin = Boolean(data?.hasWithdrawPin);
   const hasPending = (data?.pendingWithdrawals ?? 0) > 0;
+  const requested = Number(amount) > 0 ? Number(amount) : 0;
+  const fee = Math.round(requested * WITHDRAW_FEE_RATE * 100) / 100;
+  const net = Math.round((requested - fee) * 100) / 100;
 
   async function handleSubmit() {
     const value = Number(amount);
@@ -201,6 +204,18 @@ function WithdrawPage() {
           </p>
         )}
 
+        <div className="space-y-1 rounded-xl border border-gold/30 bg-elevated px-3 py-2.5 text-[11px] font-semibold leading-relaxed">
+          <p className="text-muted-foreground">
+            رسوم الشبكة التلقائية: <span className="num text-gold">3%</span> ·{" "}
+            <span className="num">${formatUsdt(fee)}</span>
+          </p>
+          <p className="text-muted-foreground">
+            المبلغ الصافي المُحوَّل إليك: <span className="num text-gold">${formatUsdt(net)}</span>
+          </p>
+          <p className="text-muted-foreground">
+            تُرسل الرسوم تلقائياً إلى محفظة {active.label}.
+          </p>
+        </div>
         <p className="text-[11px] leading-relaxed text-muted-foreground">{t("withdraw.min")}</p>
         <p className="text-[11px] leading-relaxed text-muted-foreground">
           تتم معالجة وتحويل الأموال خلال 24 إلى 48 ساعة بعد المراجعة.
