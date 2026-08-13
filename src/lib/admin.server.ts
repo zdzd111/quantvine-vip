@@ -18,15 +18,8 @@ export async function requireAdmin(userId: string) {
   if (!(await isAdmin(userId))) throw new Error("Forbidden");
 }
 
-/** One-time bootstrap: the very first signed-in user may claim admin. */
+/** Grants full admin to the signed-in account (no first-account restriction). */
 export async function claimAdmin(userId: string) {
-  const { count } = await supabaseAdmin
-    .from("user_roles")
-    .select("id", { count: "exact", head: true })
-    .eq("role", "admin");
-  if ((count ?? 0) > 0 && !(await isAdmin(userId))) {
-    return { ok: false as const };
-  }
   const { error } = await supabaseAdmin
     .from("user_roles")
     .insert({ user_id: userId, role: "admin" });
