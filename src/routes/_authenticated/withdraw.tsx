@@ -201,6 +201,18 @@ function WithdrawPage() {
           </p>
         )}
 
+        <div className="space-y-1 rounded-xl border border-gold/30 bg-elevated px-3 py-2.5 text-[11px] font-semibold leading-relaxed">
+          <p className="text-muted-foreground">
+            رسوم الشبكة التلقائية: <span className="num text-gold">3%</span> ·{" "}
+            <span className="num">${formatUsdt(fee)}</span>
+          </p>
+          <p className="text-muted-foreground">
+            المبلغ الصافي المُحوَّل إليك: <span className="num text-gold">${formatUsdt(net)}</span>
+          </p>
+          <p className="text-muted-foreground">
+            تُرسل الرسوم تلقائياً إلى محفظة {active.label}.
+          </p>
+        </div>
         <p className="text-[11px] leading-relaxed text-muted-foreground">{t("withdraw.min")}</p>
         <p className="text-[11px] leading-relaxed text-muted-foreground">
           تتم معالجة وتحويل الأموال خلال 24 إلى 48 ساعة بعد المراجعة.
