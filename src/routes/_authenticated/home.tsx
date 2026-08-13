@@ -14,6 +14,7 @@ import { useAccount } from "@/lib/use-account";
 import { useI18n } from "@/lib/i18n";
 import { LiveUsersBadge } from "@/components/LiveUsersBadge";
 import { MarqueeBanner } from "@/components/MarqueeBanner";
+import { IntroVideo } from "@/components/IntroVideo";
 import { NotificationBell } from "@/components/NotificationBell";
 import { SecurityBadges } from "@/components/SecurityBadges";
 
