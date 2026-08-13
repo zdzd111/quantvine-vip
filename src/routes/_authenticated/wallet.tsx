@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownToLine, ArrowUpFromLine, ReceiptText, Wallet } from "lucide-react";
+import { ReceiptText, Wallet } from "lucide-react";
 import { useAccount } from "@/lib/use-account";
 import { formatUsdt } from "@/lib/market";
 
