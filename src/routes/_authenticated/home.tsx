@@ -36,9 +36,10 @@ export const Route = createFileRoute("/_authenticated/home")({
 });
 
 const ACTIONS = [
-  { to: "/team", key: "home.invite", icon: UserPlus },
-  { to: "/agency", key: "home.agency", icon: Handshake },
-  { to: "/wallet", key: "nav.wallet", icon: Wallet },
+  { to: "/team", label: "ادعو أصدقاء", icon: UserPlus },
+  { to: "/agency", label: "تعاون وكيل", icon: Handshake },
+  { to: "/deposit", label: "تعبئة رصيد", icon: ArrowDownToLine },
+  { to: "/withdraw", label: "ينسحب", icon: ArrowUpFromLine },
 ] as const;
 
 
